@@ -1,0 +1,210 @@
+<?php /** @var $block \Magento\Sales\Block\Adminhtml\Order\View\Tab\Info */ ?>
+<?php
+$venipakOrder = $block->getVenipakOrder();
+$order = $block->getOrder();
+$canShow = $block->isVenipakShippingMethod();
+?>
+<div id="order-messages">
+    <?= $block->getChildHtml('order_messages') ?>
+</div>
+
+
+
+<section class="admin__page-section venipak-tab-content" id = "venipak-shipment-form">
+    <?php if ($canShow): ?>
+
+        <?php $_terminal = $block->getTerminal() ?>
+        <div class="admin__page-section-title">
+            <span class="title"><?= __('Venipak shipping information') ?></span>
+        </div>
+        <input type = "hidden" name ="order_id" value ="<?= $order->getId();?>"/>
+        <input type = "hidden" name ="venipak_order_id" value ="<?= $venipakOrder->getId();?>"/>
+        <div class ="row">
+            <div class ="col-m-6">
+                <div class ="row">
+                    <div class ="col-m-6">
+                        <div class="admin__field">
+                            <label for="venipakorder_number_of_packages" class="admin__field-label"><?= __('Packets (total)') ?></label>
+                            <div class="admin__field-control">
+                                <select name="venipakorder[number_of_packages]" id="venipakorder_number_of_packages" class="admin__control-select">
+                                    <?php for ($i = 1; $i <= 10; $i++): ?>
+                                        <option value="<?= $i; ?>" <?= $i==$venipakOrder->getNumberOfPackages()?'selected="selected"':''; ?> ><?= $i; ?></option>
+                                    <?php endfor; ?>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="admin__field">
+                            <label for="venipakorder_is_cod" class="admin__field-label"><?= __('C.O.D.') ?></label>
+                            <div class="admin__field-control">
+                                <select name="venipakorder[is_cod]" id="venipakorder_is_cod" class="admin__control-select">
+                                    <option value="1" <?= 1==$venipakOrder->getIsCod()?'selected="selected"':''; ?>>Yes</option>
+                                    <option value="0" <?= 0==$venipakOrder->getIsCod()?'selected="selected"':''; ?>>No</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="admin__field">
+                            <label for="venipakorder_carrier" class="admin__field-label"><?= __('Carrier') ?></label>
+                            <div class="admin__field-control">
+                                <?php $shipping_method = $this->getShippingMethod(); ?>
+                                <select name="venipakorder[carrier]" id="venipakorder_carrier" class="admin__control-select">
+                                    <option value="courier" <?= $shipping_method=='courier'?'selected="selected"':''; ?> >Venipak courier</option>
+                                    <option value="pickup_point" <?= $shipping_method=='pickup_point'?'selected="selected"':''; ?> >Venipal pickup point</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="admin__field">
+                            <label for="venipakorder_warehouse" class="admin__field-label"><?= __('Warehouse') ?></label>
+                            <div class="admin__field-control">
+                                <?php $warehouses = $this->getWarehouses(); ?>
+                                <select name="venipakorder[warehouse]" id="venipakorder_warehouse" class="admin__control-select">
+                                    <?php foreach ($warehouses as $warehouse): ?>
+                                        <option value="<?= $warehouse['warehouse_id']; ?>" <?= $warehouse['warehouse_id']==$venipakOrder->getWarehouseId()?'selected="selected"':''; ?> ><?= $warehouse['name']; ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class ="col-m-6">
+                        <div class="admin__field">
+                            <label for="venipakorder_weight" class="admin__field-label"><?= __('Weight (kg)') ?></label>
+                            <div class="admin__field-control">
+                                <input type ="number" name="venipakorder[weight]" value ="<?= $venipakOrder->getWeight(); ?>" id="venipakorder_weight" class="admin__control-text"/>
+                            </div>
+                        </div>
+                        <div class="admin__field">
+                            <label for="venipakorder_cod_amount" class="admin__field-label"><?= __('C.O.D. amount') ?></label>
+                            <div class="admin__field-control">
+                                <input type ="number" name="venipakorder[cod_amount]" value ="<?= $venipakOrder->getCodAmount(); ?>" id="venipakorder_cod_amount" class="admin__control-text"/>
+                            </div>
+                        </div>
+                        <div class="admin__field venipakorder_pickup_point_container">
+                            <label for="venipakorder_pickup_point" class="admin__field-label"><?= __('Pickup point') ?></label>
+                            <div class="admin__field-control">
+                                <?php $locs = $this->getTerminals(); ?>
+                                <?php $current_terminal = $this->getCurrentTerminal(); ?>
+                                <select name = "venipakorder[pickup_point]" id = "venipakorder_pickup_point" class="admin__control-select">
+                                    <option value = "">Select pickup point</option>
+                                    <?php
+                                    $grouped_options = array();
+                                    $country_id = $this->getOrder()->getShippingAddress()->getCountryId();
+                                    foreach ($locs as $loc) {
+                                        $key = $loc->id;
+                                        if (!isset($grouped_options[(string) $loc->city]))
+                                            $grouped_options[(string) $loc->city] = array();
+                                        $grouped_options[(string) $loc->city][(string) $key] = $loc;
+                                    }
+                                    ksort($grouped_options);
+                                    foreach ($grouped_options as $city => $locs) {
+                                        echo '<optgroup label = "' . $city . '">';
+                                        foreach ($locs as $key => $loc) {
+                                            echo '<option value = "' . $key . '" ' . ($key == $current_terminal ? 'selected' : '') . '>' . $loc->name . ', ' . $loc->address . ', ' . $loc->city . '</option>';
+                                        }
+                                        echo '</optgroup>';
+                                    }
+                                    ?>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class ="venipak-carrier-details">
+            <div class="admin__page-section-title">
+                <span class="title"><?= __('Extra carrier info') ?></span>
+            </div>
+            <div class ="row">
+                <div class ="col-m-6">
+                    <div class ="row">
+                        <div class ="col-m-6">
+                            <div class="admin__field">
+                                <label for="venipakorder_delivery_time" class="admin__field-label"><?= __('Select a delivery time') ?></label>
+                                <div class="admin__field-control">
+                                    <select name="venipakorder[delivery_time]" id="venipakorder_delivery_time" class="admin__control-select">
+                                        <option value="" <?= $venipakOrder->getDeliveryTime() ==''?'selected="selected"':''; ?>><?= __('Anytime') ?></option>
+                                        <option value="10" <?= $venipakOrder->getDeliveryTime() =='10'?'selected="selected"':''; ?>><?= __('Until') ?> 10:00</option>
+                                        <option value="12" <?= $venipakOrder->getDeliveryTime() =='12'?'selected="selected"':''; ?>><?= __('Until') ?> 12:00</option>
+                                        <option value="8_14" <?= $venipakOrder->getDeliveryTime() =='8_14'?'selected="selected"':''; ?>>8:00-14:00</option>
+                                        <option value="14_17" <?= $venipakOrder->getDeliveryTime() =='14_17'?'selected="selected"':''; ?>>14:00-17:00</option>
+                                        <option value="18_22" <?= $venipakOrder->getDeliveryTime() =='18_22'?'selected="selected"':''; ?>>18:00-22:00</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="admin__field">
+                                <label for="venipakorder_cabinet_number" class="admin__field-label"><?= __('Cabinet number') ?></label>
+                                <div class="admin__field-control">
+                                    <input type ="text" name="venipakorder[cabinet_number]" value ="<?= $venipakOrder->getCabinetNumber(); ?>" id="venipakorder_cabinet_number" class="admin__control-text"/>
+                                </div>
+                            </div>
+                            <div class="admin__field admin__field-option">
+                                <input name="venipakorder[call_before_delivery]" type="checkbox" <?= $venipakOrder->getCallBeforeDelivery()?'checked="checked"':''; ?> id="venipakorder_call_before_delivery" class="admin__control-checkbox" value="1">
+                                <label class="admin__field-label" for="venipakorder_call_before_delivery">
+                                    <?= __('Select this option if you want carrier to call you before delivery'); ?>                            </label>
+                            </div>
+                        </div>
+                        <div class ="col-m-6">
+                            <div class="admin__field">
+                                <label for="venipakorder_door_code" class="admin__field-label"><?= __('Door code') ?></label>
+                                <div class="admin__field-control">
+                                    <input type ="text" name="venipakorder[door_code]" value ="<?= $venipakOrder->getDoorCode(); ?>" id="venipakorder_door_code" class="admin__control-text"/>
+                                </div>
+                            </div>
+                            <div class="admin__field">
+                                <label for="venipakorder_warehouse_number" class="admin__field-label"><?= __('Warehouse number') ?></label>
+                                <div class="admin__field-control">
+                                    <input type ="text" name="venipakorder[warehouse_number]" value ="<?= $venipakOrder->getWarehouseNumber(); ?>" id="venipakorder_warehouse_number" class="admin__control-text"/>
+                                </div>
+                            </div>
+                            <div class="admin__field admin__field-option">
+                                <input name="venipakorder[signed_document]" type="checkbox" <?= $venipakOrder->getReturnSignedDocument()?'checked="checked"':''; ?> id="venipakorder_signed_document" class="admin__control-checkbox" value="1">
+                                <label class="admin__field-label" for="venipakorder_signed_document">
+                                    <?= __('Select if You want a courier to return a signed document which leads a shipment'); ?></label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="venipak-order-actions" style = "margin-top: 20px;">
+            <button id="venipak-save-btn" title="Save" type="button" class="action-default scalable action-save action-secondary" onclick="submitAndReloadArea($('venipak-shipment-form').parentNode, '<?php echo $this->getUrl('mijora_venipak/order/venipakordersaveajax'); ?>')" data-ui-id="widget-button-0">
+                <span><?php echo __("Save"); ?></span>
+            </button>
+            
+            <button id="venipak-generate-btn" title="Generate labels" type="button" class="action-default scalable action-save action-primary" onclick="submitAndReloadArea($('venipak-shipment-form').parentNode, '<?php echo $this->getUrl('mijora_venipak/order/buildshipmentajax'); ?>')" data-ui-id="widget-button-0">
+                <span><?php echo __("Generate labels"); ?></span>
+            </button>
+        </div>
+        <?php $labels = $this->getLabels($venipakOrder); ?>
+        <?php if (!empty($labels)): ?>
+        <div class="venipak-order-labels" style = "margin-top: 20px;">
+            <?php foreach ($labels as $label): ?>
+            <a href = "<?= $this->labelUrl($venipakOrder->getId()); ?>" target = "_blank"><span style = "margin-right: 10px; padding: 5px; background: blue; color: white;" ><?= $label; ?></span></a>
+            <?php endforeach; ?>
+        </div>
+        <?php endif; ?>
+    </div>
+    <script>
+        require(['prototype'], function () {
+
+            saveVenipakOrder = function () {
+                submitAndReloadArea($('venipak-shipment-form').parentNode, '<?= /* @escapeNotVerified */ $block->getSubmitUrl() ?>')
+            };
+            
+           
+
+            if ($('#venipak-save-btn')) {
+                $('#venipak-save-btn').observe('click', saveVenipakOrder);
+            }
+            
+        });
+    </script>
+
+
+<?php else: ?>
+
+    <div class="admin__page-section-title">
+        <span class="title"><?= /* @escapeNotVerified */ __('Not a Venipak shipping method') ?></span>
+    </div>
+
+<?php endif; ?>
+</section>

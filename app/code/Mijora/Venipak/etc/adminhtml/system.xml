@@ -1,0 +1,166 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © 2013-2017 Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <section id="carriers">
+            <group id="venipak" translate="label" type="text" sortOrder="150" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Venipak</label>
+                <field id="active" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                    <label>Enabled for Checkout</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="title" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Title</label>
+                </field>
+                <field id="api_id" translate="label comment" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>API ID</label>
+                </field>
+                <field id="account" translate="label comment" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Username</label>
+                </field>
+                <field id="password" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Password</label>
+                </field>
+                <field id="shop_name" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="0" >
+                    <label>Shop name</label>
+                </field>
+                <field id="company_email" translate="label" type="text" sortOrder="93" showInDefault="1" showInWebsite="1" showInStore="0" >
+                    <label>Company email</label>
+                </field>
+                <field id="label_size" translate="label" type="select" sortOrder="130" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                    <label>Label size</label>
+                    <source_model>Mijora\Venipak\Model\Source\LabelSize</source_model>
+                </field>
+                
+                <field id="max_package_weight" translate="label" type="text" sortOrder="140" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                    <label>Maximum Package Weight</label>
+                    <validate>validate-number validate-zero-or-greater</validate>
+                </field>
+                <!-- Free shipping price toggler -->
+                <field id="free_shipping_enable" translate="label" type="select" sortOrder="179" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Free Shipping Amount Threshold</label>
+                    <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
+                </field>
+                <field id="free_shipping_subtotal" translate="label" type="text" sortOrder="180" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Free from</label>
+                    <validate>validate-number validate-zero-or-greater</validate>
+                    <depends>
+                        <field id="free_shipping_enable">1</field>
+                    </depends>
+                </field>
+                
+                <field id="price_by_country" translate="label" type="select" sortOrder="181" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Set price by country</label>
+                    <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
+                    <comment>Price can be enetered in fixed number format or weight range: 0:1:5|1:10:6, means from 0 to 1 kg - 5 Eur, from 1 to 10kg 6 Eur</comment>
+                </field>
+                
+                <field id="courier_price" translate="label" type="text" sortOrder="182" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Courier shipping price</label>
+                    <depends>
+                        <field id="price_by_country">0</field>
+                    </depends>
+                </field>
+                
+                <field id="pickup_point_price" translate="label" type="text" sortOrder="183" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Pickup point shipping price</label>
+                    <depends>
+                        <field id="price_by_country">0</field>
+                    </depends>
+                </field>
+                
+                <field id="lt_courier_price" translate="label" type="text" sortOrder="184" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>LT Courier shipping price</label>
+                    <depends>
+                        <field id="price_by_country">1</field>
+                    </depends>
+                </field>
+                
+                <field id="lt_pickup_point_price" translate="label" type="text" sortOrder="185" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>LT Pickup point shipping price</label>
+                    <depends>
+                        <field id="price_by_country">1</field>
+                    </depends>
+                </field>
+                
+                <field id="lv_courier_price" translate="label" type="text" sortOrder="186" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>LV Courier shipping price</label>
+                    <depends>
+                        <field id="price_by_country">1</field>
+                    </depends>
+                </field>
+                
+                <field id="lv_pickup_point_price" translate="label" type="text" sortOrder="187" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>LV Pickup point shipping price</label>
+                    <depends>
+                        <field id="price_by_country">1</field>
+                    </depends>
+                </field>
+                
+                <field id="ee_courier_price" translate="label" type="text" sortOrder="188" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>EE Courier shipping price</label>
+                    <depends>
+                        <field id="price_by_country">1</field>
+                    </depends>
+                </field>
+                
+                <field id="ee_pickup_point_price" translate="label" type="text" sortOrder="189" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>EE Pickup point shipping price</label>
+                    <depends>
+                        <field id="price_by_country">1</field>
+                    </depends>
+                </field>
+                
+                <field id="pl_courier_price" translate="label" type="text" sortOrder="190" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>PL Courier shipping price</label>
+                    <depends>
+                        <field id="price_by_country">1</field>
+                    </depends>
+                </field>
+                
+                <field id="pl_pickup_point_price" translate="label" type="text" sortOrder="191" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>PL Pickup point shipping price</label>
+                    <depends>
+                        <field id="price_by_country">1</field>
+                    </depends>
+                </field>
+                
+                <field id="ignore_keyword" translate="label" type="text" sortOrder="195" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Disable shipping for products, which contains keyword</label>
+                </field>
+                
+                <field id="allowed_methods" translate="label" type="multiselect" sortOrder="200" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                    <label>Allowed Methods</label>
+                    <source_model>Mijora\Venipak\Model\Source\Method</source_model>
+                    <can_be_empty>1</can_be_empty>
+                </field>
+                <field id="specificerrmsg" translate="label" type="textarea" sortOrder="240" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Displayed Error Message</label>
+                </field>
+                <field id="sallowspecific" translate="label" type="select" sortOrder="250" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                    <label>Ship to Applicable Countries</label>
+                    <frontend_class>shipping-applicable-country</frontend_class>
+                    <source_model>Magento\Shipping\Model\Config\Source\Allspecificcountries</source_model>
+                </field>
+                <field id="specificcountry" translate="label" type="multiselect" sortOrder="260" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Ship to Specific Countries</label>
+                    <source_model>Mijora\Venipak\Model\Source\Country</source_model>
+                    <can_be_empty>1</can_be_empty>
+                </field>
+                <field id="showmethod" translate="label" type="select" sortOrder="280" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Show Method if Not Applicable</label>
+                    <frontend_class>shipping-skip-hide</frontend_class>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="sort_order" translate="label" type="text" sortOrder="290" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Sort Order</label>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

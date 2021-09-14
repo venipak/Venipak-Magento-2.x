@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © 2013-2017 Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="Mijora\Venipak\Api\PickupPointManagementInterface" type="Mijora\Venipak\Model\PickupPointManagement" />
+    <preference for="Mijora\Venipak\Api\Data\PickupPointInterface" type="Mijora\Venipak\Model\PickupPoint" />
+    <type name="Magento\Quote\Model\Quote\Address">
+        <plugin name="venipak-pickup-point" type="Mijora\Venipak\Model\Quote\AddressPlugin" sortOrder="1" disabled="false"/>
+    </type>
+    <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
+        <arguments>
+            <argument name="collections" xsi:type="array">
+                <item name="mijora_venipak_warehouse_listing_data_source" xsi:type="string">Mijora\Venipak\Model\ResourceModel\Warehouse\Grid\Collection</item>
+            </argument>
+        </arguments>
+    </type>
+    <virtualType name="Mijora\Venipak\Model\ResourceModel\Warehouse\Grid\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">venipak_warehouse</argument>
+            <argument name="resourceModel" xsi:type="string">Mijora\Venipak\Model\ResourceModel\Warehouse</argument>
+        </arguments>
+    </virtualType>
+</config>

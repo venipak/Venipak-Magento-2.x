@@ -1,0 +1,118 @@
+<div data-bind='afterRender: initAfterLoad()' style = "display: none;">
+
+    <div class="mjvp-pp-container">
+        <input type="hidden" id="mjvp-pickup-country" name="mjvp-pickup-country" value=""/>
+
+
+        <input type="hidden" id="mjvp-selected-terminal" name="mjvp-selected-terminal" value=""/>
+        <div id="mjvp-pickup-select-modal">
+        </div>
+    </div>
+    <div id="tmjs-modal-template">
+        <div class="tmjs-modal-content">
+            <div class="tmjs-modal-body">
+                <div class="tmjs-map-container">
+                    <div class="tmjs-map"></div>
+                </div>
+                <div class="tmjs-terminal-sidebar">
+                    <div class="tmjs-terminal-finder">
+                        <h2 data-tmjs-string="modal_header" data-bind="i18n: 'Pickup points map'"></h2><br>
+                        <h3 data-bind="i18n: 'Filter delivery points'"></h3>
+                        <div id="filter-container" class="col-12">
+                            <div class="col-4">
+                                <a class="mjvp-pickup-filter" data-filter="pickup" rel="nofollow"><span data-bind="i18n: 'Pickups'"></span></a>
+                            </div>
+                            <div class="col-4">
+                                <a class="mjvp-pickup-filter" data-filter="locker" rel="nofollow"><span data-bind="i18n: 'Lockers'"></span></a>
+                            </div>
+                            <div class="col-4">
+                                <a class="mjvp-pickup-filter" data-filter="cod" rel="nofollow"><span data-bind="i18n: 'C.O.D delivery points'"></span></a>
+                            </div>
+                            <div class="col-4">
+                                <a class="mjvp-pickup-filter reset" rel="nofollow" data-bind="i18n: 'Reset'"></a>
+                            </div>
+                        </div>
+                        <div class="tmjs-close-modal-btn">
+                        </div>
+
+                        <h3 class="tmjs-pt-2" data-tmjs-string="seach_header" data-bind="i18n: 'Search around'"></h3>
+                        <div class="tmjs-d-block">
+                            <input type="text" class="tmjs-search-input">
+                            <a href="#search" class="tmjs-search-btn"><img width="18" data-bind="attr: { src: require.toUrl('Mijora_Venipak/images/') + 'search.svg' }"></a>
+                        </div>
+                        <h3 class="tmjs-pt-1" data-tmjs-string="seach_header" data-bind="i18n: 'Radius'"></h3>
+                        <div class="tmjs-d-block">
+                            <input id='terminal-search-radius' type="text" name="search-radius" class="tmjs-search-input">
+                            <span data-bind="i18n: 'km'"></span>
+                        </div>
+
+                        <div class="tmjs-d-block tmjs-pt-1">
+                            <a href="#useMyLocation" class="tmjs-geolocation-btn">
+                                <img width="15" data-bind="attr: { src: require.toUrl('Mijora_Venipak/images/') + 'gps.svg' }">
+                                <span data-tmjs-string="geolocation_btn" data-bind="i18n: 'Use my location'"></span>
+                            </a>
+                        </div>
+
+                        <div class="tmjs-search-result tmjs-d-block tmjs-pt-2">
+                        </div>
+
+                    </div>
+                    <div class="tmjs-terminal-block">
+                        <h3 data-tmjs-string="terminal_list_header" data-bind="i18n: 'Pickup points list'"></h3>
+                        <ul class="tmjs-terminal-list"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class = "venipak_courrier_data">
+        <fieldset class="fieldset">       
+            <div class="field">
+                <label class="label"  for="venipak-courier-delivery-time">
+                    <span data-bind="i18n: 'Delivery time:'"></span>
+                </label>
+                <div class="control">
+                    <select name="venipak-courier-delivery-time" id="venipak-courier-delivery-time" class="input-select">
+                        <option value="" data-bind="i18n: 'Anytime'"></option>
+                        <option value="10" data-bind="i18n: 'Until 10:00'"></option>
+                        <option value="12" data-bind="i18n: 'Until 12:00'"></option>
+                        <option value="8_14">8:00-14:00</option>
+                        <option value="14_17">14:00-17:00</option>
+                        <option value="18_22">18:00-22:00</option>
+                    </select>
+                </div>
+            </div>
+            <div class="field">
+                <label class="label"  for="venipak-courier-door-code">
+                    <span data-bind="i18n: 'Door code (optional):'"></span>
+                </label>
+                <div class="control">
+                    <input class="input-text" type="text" name="venipak-courier-door-code" aria-invalid="false" id="venipak-courier-door-code">
+                </div>
+            </div>
+            <div class="field">
+                <label class="label"  for="venipak-courier-cabinet-number">
+                    <span data-bind="i18n: 'Cabinet number (optional):'"></span>
+                </label>
+                <div class="control">
+                    <input class="input-text" type="text" name="venipak-courier-cabinet-number" aria-invalid="false" id="venipak-courier-cabinet-number">
+                </div>
+            </div>
+            <div class="field">
+                <label class="label"  for="venipak-courier-warehouse-number">
+                    <span data-bind="i18n: 'Warehouse number (optional):'"></span>
+                </label>
+                <div class="control">
+                    <input class="input-text" type="text" name="venipak-courier-warehouse-number" aria-invalid="false" id="venipak-courier-warehouse-number">
+                </div>
+            </div>
+            <div class="field">
+                <input name="venipak-courier-call-before-delivery" type="checkbox" id="venipak-courier-call-before-delivery" class="checkbox" value="1">
+                <label class="label" for="venipak-courier-call-before-delivery">
+                    <span data-bind="i18n: 'Call before delivery'"></span>
+                </label>
+            </div>
+        </fieldset>
+    </div>
+</div>

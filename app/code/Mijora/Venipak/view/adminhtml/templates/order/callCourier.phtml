@@ -1,0 +1,121 @@
+<div id="venipak-call-courier-modal" style="display: none">
+
+    <form action="<?= $block->escapeUrl($block->getFormUrl()) ?>" method="post"
+          id="venipak-call-courier-form">
+        <input type ="hidden" name ="venipakmanifest[id]" value =""  id = "venipak_manifest_id"/>
+        <div class="admin__field w100">
+            <label for="venipakorder_comment" class="admin__field-label"><?= __('Comment to courier (optional)') ?></label>
+            <div class="admin__field-control">
+                <input type ="text" name="venipakmanifest[comment]" value ="" id="venipakorder_comment" class="admin__control-text"/>
+            </div>
+        </div>
+        <div class="admin__field w100">
+            <label for="venipakorder_weight" class="admin__field-label"><?= __('Weight') ?></label>
+            <div class="admin__field-control">
+                <input type ="number" name="venipakmanifest[weight]" value ="" id="venipakorder_weight" class="admin__control-text"/>
+            </div>
+        </div>
+        <div class="message message-warning" style = "margin:10px 0;">
+            <ul class = "m-0 no-style">
+                <li><?= __('Must be at least 2 hours difference between TIME FROM and TIME TO') ?></li>
+                <li><?= __('Minutes should be indicated quarterly: 15, 30, 45, 00') ?></li>
+            </ul>
+        </div>
+        <div class = "row">
+            <div class ="col-m-6">
+                <div class="admin__field w100">
+                    <label for="venipakorder_arrival_from" class="admin__field-label"><?= __('Courier arrival time (from)') ?></label>
+                    <div class="admin__field-control">
+                        <input type ="text" name="venipakmanifest[arrival_from]" value ="" id="venipakorder_arrival_from" class="admin__control-text datetimepicker"/>
+                    </div>
+                </div>
+            </div>
+            <div class ="col-m-6">
+                <div class="admin__field w100">
+                    <label for="venipakorder_arrival_to" class="admin__field-label"><?= __('Courier arrival time (to)') ?></label>
+                    <div class="admin__field-control">
+                        <input type ="text" name="venipakmanifest[arrival_to]" value ="" id="venipakorder_arrival_to" class="admin__control-text datetimepicker"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="admin__field">
+            <label for="venipakorder_warehouse" class="admin__field-label"><?= __('Warehouse') ?></label>
+            <div class="admin__field-control w100">
+                <?php $warehouses = $this->getWarehouses(); ?>
+                <select name="venipakmanifest[warehouse]" id="venipakorder_warehouse" class="admin__control-select">
+                    <option value=""><?= __('Select warehouse'); ?></option>
+                    <?php foreach ($warehouses as $warehouse): ?>
+                        <option value="<?= $warehouse['warehouse_id']; ?>"><?= $warehouse['name']; ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+        </div>
+        <div class="admin__field">
+            <input type="button" value="<?= __('Send request') ?>"  class="action-default scalable action-save action-primary" id="venipak-call-courier-submit">
+        </div>
+    </form>
+</div>
+<script>
+    require([
+        'jquery',
+        'mage/calendar'
+    ], function ($) {
+        $('.datetimepicker').datetimepicker({
+            dateFormat: 'yy-mm-dd',
+            timeFormat: 'HH:mm',
+            changeMonth: true,
+            changeYear: true,
+            showsTime: true
+        });
+    });
+</script>
+<script>
+    require(
+            [
+                'jquery',
+                'Magento_Ui/js/modal/modal'
+            ],
+            function (
+                    $,
+                    modal
+                    ) {
+                var options = {
+                    type: 'popup',
+                    responsive: true,
+                    innerScroll: true,
+                    title: '<?= __('Call Venipak courier') ?>',
+                    modalClass: 'custom-modal',
+                    buttons: [{
+                            text: $.mage.__('Close'),
+                            class: '',
+                            click: function () {
+                                this.closeModal();
+                            }
+                        }]
+                };
+
+                var popup = modal(options, $('#venipak-call-courier-modal'));
+                $(".call_courrier").click(function (e) {
+                    e.preventDefault();
+                    var warehouse = $(this).attr('data-warehouse');
+                    var id = $(this).attr('data-id');
+                    $('#venipak_manifest_id').val(id);
+                    $('#venipakorder_warehouse').val(warehouse);
+                    $("#venipak-call-courier-modal").modal('openModal');
+                });
+
+                $('#venipak-call-courier-submit').click(function () {
+                    $('#venipak-call-courier-form').append($('<input>', {
+                        'name': 'form_key',
+                        'value': window.FORM_KEY,
+                        'type': 'hidden'
+                    }));
+                    $('#venipak-call-courier-form').submit();
+
+                });
+
+            }
+
+    );
+</script>

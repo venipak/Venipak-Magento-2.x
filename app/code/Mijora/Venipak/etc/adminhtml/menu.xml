@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add id="Mijora_Venipak::menu"
+             title="Venipak" module="Mijora_Venipak"
+             sortOrder="10"
+             resource="Magento_Backend::content"
+        />
+        <add id="Mijora_Venipak::order"
+             title="Venipak orders" 
+             module="Mijora_Venipak"
+             sortOrder="10" 
+             parent="Mijora_Venipak::menu"
+             action="mijora_venipak/order/index"
+             resource="Mijora_Venipak::order"
+        />
+        <add id="Mijora_Venipak::manifest"
+             title="Venipak manifest" 
+             module="Mijora_Venipak"
+             sortOrder="12" 
+             parent="Mijora_Venipak::menu"
+             action="mijora_venipak/manifest/index"
+             resource="Mijora_Venipak::manifest"
+        />
+        <add id="Mijora_Venipak::warehouse"
+             title="Venipak warehouses" 
+             module="Mijora_Venipak"
+             sortOrder="14" 
+             parent="Mijora_Venipak::menu"
+             action="mijora_venipak/warehouse/index"
+             resource="Mijora_Venipak::warehouse"
+        />
+    </menu>
+</config>

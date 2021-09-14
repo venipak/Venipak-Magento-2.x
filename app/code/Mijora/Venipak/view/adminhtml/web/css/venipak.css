@@ -1,0 +1,15 @@
+.w100, .w100 input, .w100 ._has-datepicker.admin__control-text, .w100 select {
+    width: 100%;
+}
+.w100 {
+    padding-right: 10px;
+}
+.p-0 {
+    padding:0;
+}
+.m-0 {
+    margin: 0;
+}
+.no-style {
+    list-style: none;
+}

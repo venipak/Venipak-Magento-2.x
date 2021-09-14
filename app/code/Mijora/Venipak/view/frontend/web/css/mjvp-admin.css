@@ -1,0 +1,181 @@
+.venipak {
+    margin: 0;
+}
+
+.venipak-logo {
+    height: 50%;
+    padding-right: 5px;
+}
+
+.venipak .panel-footer {
+    height: auto!important;
+    display: flex;
+    justify-content: space-between;
+}
+
+.venipak .panel-footer .btn {
+    text-transform: uppercase;
+    font-weight: 900;
+}
+
+.venipak-extra-header {
+    padding-top: 1em;
+    padding-bottom: 0.5em;
+    font-size: 1.1em;
+    font-weight: 900;
+}
+
+.venipak-footer .venipak-extra-header {
+    padding-top: 0;
+}
+
+#venipak_print_label_btn,
+#venipak_save_cart_info_btn,
+#venipak_generate_label_btn {
+    border: none;
+    margin-bottom: 1em;
+}
+
+#venipak_print_label_btn {
+    background-color: #0b7489;
+}
+
+#venipak_print_label_btn[data-disabled="true"] {
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    cursor: not-allowed;
+    filter: alpha(opacity=65);
+    opacity: .65;
+    pointer-events: none;
+}
+
+#venipak_save_cart_info_btn {
+    background-color: #829191;
+    margin-right: 1em;
+}
+
+#venipak_generate_label_btn {
+    background-color: #6eb257;
+}
+
+.venipak .panel-footer .btn [class^=icon-] {
+    padding-right: 5px;
+}
+
+.venipak .field-row {
+    margin-bottom: 1em;
+}
+
+.venipak .response {
+    margin-top: 1em;
+}
+
+#call-modal-errors {
+    display: none;
+}
+
+[id^="venipak-modal"] .modal-header {
+    padding: 20px;
+    padding-top: 13px;
+}
+
+#content [id^="venipak-modal"]  h3:not(.modal-title) {
+    margin: 0px -10px 15px;
+}
+
+[id^="venipak-modal"] .modal-header .close {
+     margin-top: 5px;
+}
+.bootstrap .form-group.delivery-checkbox {
+    margin-bottom: 0;
+}
+
+#venipak-order-card .card-header {
+    height: 60px;
+    padding-bottom: 0;
+    padding-top: 13px;
+}
+
+#venipak-order-card .venipak-logo {
+    height: 75%;
+}
+
+.bootstrap .btn-group-action .btn-group>a:first-child {
+    margin-right: 0;
+}
+
+div#vp-loading-overlay {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(0,0,0,.7);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.lds-ellipsis {
+    display: inline-block;
+    position: relative;
+    width: 80px;
+    height: 80px;
+}
+
+.lds-ellipsis div:nth-child(1) {
+    left: 8px;
+    animation: lds-ellipsis1 0.6s infinite;
+}
+
+.lds-ellipsis div:nth-child(2) {
+    left: 8px;
+    animation: lds-ellipsis2 0.6s infinite;
+}
+
+.lds-ellipsis div:nth-child(3) {
+    left: 32px;
+    animation: lds-ellipsis2 0.6s infinite;
+}
+
+.lds-ellipsis div:nth-child(4) {
+    left: 56px;
+    animation: lds-ellipsis3 0.6s infinite;
+}
+
+.lds-ellipsis div {
+    position: absolute;
+    top: 33px;
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    background: #fff;
+    animation-timing-function: cubic-bezier(0,1,1,0);
+}
+
+@keyframes lds-ellipsis1 {
+    0% {
+        transform: scale(0);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+@keyframes lds-ellipsis3 {
+    0% {
+        transform: scale(1);
+    }
+    100% {
+        transform: scale(0);
+    }
+}
+@keyframes lds-ellipsis2 {
+    0% {
+        transform: translate(0, 0);
+    }
+    100% {
+        transform: translate(24px, 0);
+    }
+}

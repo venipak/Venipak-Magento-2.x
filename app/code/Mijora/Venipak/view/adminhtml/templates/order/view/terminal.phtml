@@ -1,0 +1,43 @@
+<?php
+$pickup_point = $this->getTerminalName();
+
+if ($pickup_point) {
+    $button = '<button id = "change-terminal" class = "action-secondary">' . __('Change') . '</button>';
+    echo '<div style = "border-top:1px solid #ccc; padding: 10px;">';
+    echo '<b>' . __("Venipak pickup point") . '</b>: '; //.$pickup_point ;
+    if ($this->getOrder()->getStatus() == "closed") {
+        echo $pickup_point . '</div>';
+    } else {
+        ?>
+        <?php $locs = $this->getTerminals($this->getOrder()); ?>
+        <?php $current_terminal = $this->getCurrentTerminal(); ?>
+        <select name = "order[venipak_pickup_point]" id = "venipak_pickup_point" data-url = '<?= $this->getUrl('mijora_venipak/order/UpdateTerminal') ?>' data-order = '<?= $this->getOrder()->getId(); ?>' style = "display: inline; height: 32px;">
+            <option value = "">Select pickup point</option>
+            <?php
+            $grouped_options = array();
+            $country_id = $this->getOrder()->getShippingAddress()->getCountryId();
+            foreach ($locs as $loc) {
+                if ($loc->country != $country_id) {
+                    continue;
+                }
+                $key = $loc->id;
+                if (!isset($grouped_options[(string) $loc->city]))
+                    $grouped_options[(string) $loc->city] = array();
+                $grouped_options[(string) $loc->city][(string) $key] = $loc;
+            }
+            ksort($grouped_options);
+            foreach ($grouped_options as $city => $locs) {
+                echo '<optgroup label = "' . $city . '">';
+                foreach ($locs as $key => $loc) {
+                    echo '<option value = "' . $key . '" ' . ($key == $current_terminal ? 'selected' : '') . '>' . $loc->name . ', ' . $loc->address . ', ' . $loc->city . '</option>';
+                }
+                echo '</optgroup>';
+            }
+            ?>
+        </select>   
+            <?php
+            echo $button;
+            echo '</div>';
+        }
+    }
+    ?>
