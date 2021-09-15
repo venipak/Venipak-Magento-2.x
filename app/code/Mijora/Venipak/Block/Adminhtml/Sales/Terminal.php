@@ -2,8 +2,6 @@
 namespace Mijora\Venipak\Block\Adminhtml\Sales;
 
 use Magento\Sales\Model\OrderRepository;
-use Mijora\Venipak\Model\Carrier;
-use Mijora\Venipak\Model\Helper\MjvpApi;
 
 class Terminal extends \Magento\Backend\Block\Template {
    
@@ -11,7 +9,6 @@ class Terminal extends \Magento\Backend\Block\Template {
     
     protected $pickupPoints;
     
-    protected $api;
     
    
     /**
@@ -30,15 +27,13 @@ class Terminal extends \Magento\Backend\Block\Template {
         \Magento\Backend\Block\Template\Context $context,
         \Magento\Framework\Registry $registry,
         array $data = [], 
-        \Mijora\Venipak\Model\Carrier $carrier,
-            MjvpApi $api
+        \Mijora\Venipak\Model\Carrier $carrier
     ) {
         $this->coreRegistry = $registry;
         $this->carrier = $carrier;
-        $this->api = $api;
         parent::__construct($context, $data);
         
-        $this->pickupPoints = $api->getTerminals('');
+        $this->pickupPoints = $this->carrier->getTerminals('');
     }
     
     public function getTerminalName(){

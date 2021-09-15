@@ -4,23 +4,26 @@ namespace Mijora\Venipak\Model;
 
 use Mijora\Venipak\Api\PickupPointManagementInterface;
 use Mijora\Venipak\Api\Data\PickupPointInterfaceFactory;
-use Mijora\Venipak\Model\Carrier;
 use Magento\Framework\Xml\Parser;
 use Magento\Framework\Module\Dir\Reader;
 use Magento\Framework\Module\Dir;
-use Mijora\Venipak\Model\Helper\MjvpApi;
 
 class PickupPointManagement implements PickupPointManagementInterface {
 
     protected $pickupPointFactory;
-
+    protected $carrier;
     /**
      * OfficeManagement constructor.
      * @param PickupPointInterfaceFactory $officeInterfaceFactory
      */
     
-    public function __construct(PickupPointInterfaceFactory $pickupPointInterfaceFactory) {
+    public function __construct(
+            PickupPointInterfaceFactory $pickupPointInterfaceFactory,
+            \Mijora\Venipak\Model\Carrier $carrier
+            ) {
+        
         $this->pickupPointFactory = $pickupPointInterfaceFactory;
+        $this->carrier = $carrier;
     }
 
     /**
@@ -35,8 +38,10 @@ class PickupPointManagement implements PickupPointManagementInterface {
     public function fetchPickupPoints($group, $city, $country) {
         $mapped_pickup_points = [];
         //return [];
-        $api = new MjvpApi();
-        $pickup_points = $api->getTerminals($country);
+        $pickup_points = $this->carrier->getTerminals($country);
+        if (!is_array($pickup_points)){
+            return [];
+        }
         foreach ($pickup_points as $pickup_point){
             $mapped_pickup_point = $this->pickupPointFactory->create();
             $mapped_pickup_point->setId($pickup_point->id);

@@ -5,20 +5,32 @@ jQuery( document ).ready(function($) {
   if($('#mjvp-courier-extra-fields .alert-danger').length != 0 || $('.mjvp-pp-container .alert-danger').length != 0)
     $('#notifications .alert-danger').hide();
     $("body").on('click', '.mjvp-pickup-filter', e => {
-        console.log(".mjvp-pickup-filter clicked");
+        
         venipak_custom_modal.tmjs.dom.addOverlay();
         
-        e.preventDefault();
-        let clickedLink = $(e.target);
-        if(clickedLink[0].nodeName == 'SPAN')
-            clickedLink = $(clickedLink[0].parentElement);
+        const clickTarget = $(e.target);
+        if(clickTarget.hasClass('reset'))
+        {
+            $("#filter-container input[type='checkbox']").each((i, el) => {
+                $(el).prop('checked', true);
+            });
+        }
+
+        var selectedFilters = {};
+        $("#filter-container input[type='checkbox']").each((i, el) => {
+            if($(el).is(':checked'))
+            {
+                selectedFilters[i] = $(el).data('filter');
+            }
+        });
+        
         $('.mjvp-pickup-filter').removeClass('active');
         $.ajax({
             type: "POST",
-            url: mjvp_front_controller_url + "?ajax=1&submitFilterTerminals=1&action=filter&quote_id="+mjvp_quote_id,
+            url: mjvp_front_controller_url + "?ajax=1&submitFilterTerminals=1&action=filter&country="+mjvp_country_code+"&weight="+mjvp_weight,
             dataType: "json",
             data: {
-                'filter_key' : clickedLink.data('filter'),
+                'filter_key' : selectedFilters
             },
             success: function (res) {
                 $('.tmjs-search-input').val('');
@@ -26,7 +38,6 @@ jQuery( document ).ready(function($) {
                 venipak_custom_modal.tmjs.dom.removeOverlay();
                 if(typeof res.mjvp_terminals != "undefined")
                 {
-                    clickedLink.addClass('active');
                     var terminals = [];
                     mjvp_terminals = res.mjvp_terminals;
                     mjvp_terminals.forEach((terminal) => {

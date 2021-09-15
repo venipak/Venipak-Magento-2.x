@@ -11,10 +11,12 @@ class PrintManifest extends \Magento\Backend\Block\Widget\Grid\Column\Renderer\A
      */
     public function render(\Magento\Framework\DataObject $row) {
         $label = __("Print manifest");
+        $class = '';
         if (!$row->getIsClosed()) {
             $label = __("Close and print manifest");
+            $class = ' manifest-print';
         }
-        return '<a href="' . $this->getUrl('mijora_venipak/manifest/printmanifest', ['id' => $row->getManifestId()]) . '" class="action-default scalable action-save action-primary" target ="_blank">' . $label . '</a>';
+        return '<a href="' . $this->getUrl('mijora_venipak/manifest/printmanifest', ['id' => $row->getManifestId()]) . '" class="action-default scalable action-save action-primary '.$class.'" target ="_blank">' . $label . '</a>';
      
     }
 

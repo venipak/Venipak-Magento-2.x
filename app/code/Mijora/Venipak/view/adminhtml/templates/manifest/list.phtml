@@ -1,0 +1,30 @@
+<script>
+    require([
+        "jquery",
+        'Magento_Ui/js/modal/confirm',
+        'mage/translate'
+    ],
+            function ($, confirmation, t) {
+                $('body').on('click', 'a.manifest-print', function (e) {
+                    e.preventDefault();
+                    var el = $(this);
+
+                    confirmation({
+                        title: t('Confirm close'),
+                        content: t('Do you want to close and print manifest?'),
+                        actions: {
+
+                            confirm: function () {
+                                var url = el.attr('href'); 
+                                window.open(url, '_blank');
+                                return true;
+                            },
+                            cancel: function () {
+                                return false;
+                            }
+                        }
+                    });
+
+                });
+            });
+</script>

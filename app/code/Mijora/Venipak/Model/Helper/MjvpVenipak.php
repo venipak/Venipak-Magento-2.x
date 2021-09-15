@@ -4,17 +4,23 @@ namespace Mijora\Venipak\Model\Helper;
 
 class MjvpVenipak
 {
-    //private $_curlUrl = 'https://go.venipak.lt/';
-    private $_curlUrl = 'https://venipak.uat.megodata.com/'; //DEMO
+    private $_liveCurlUrl = 'https://go.venipak.lt/';
+    private $_testCurlUrl = 'https://venipak.uat.megodata.com/'; //DEMO
+    private $_curlUrl;
 
     /**
      * Class constructor
      */
-    public function __construct()
+    public function __construct($test = false)
     {
+        if ($test){
+            $this->_curlUrl = $this->_testCurlUrl;
+        } else {
+            $this->_curlUrl = $this->_liveCurlUrl;
+        }
     }
 
-    public function getTrackingShipment($tracking_code, $tracking_type = 'track_single')
+    public function getTrackingShipment($tracking_code, $tracking_type = 'track_single', $format = 'csv')
     {
         $types = array(
             'track_single' => 1,
@@ -30,7 +36,7 @@ class MjvpVenipak
             'queryParams' => array(
                 'code' => $tracking_code,
                 'type' => $types[$tracking_type],
-                'output' => 'html',
+                'output' => $format,
             ),
         );
         

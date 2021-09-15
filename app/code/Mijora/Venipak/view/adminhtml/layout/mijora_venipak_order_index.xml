@@ -5,11 +5,8 @@
         <css src="Mijora_Venipak::css/venipak.css"/>
     </head>
     <body>
-        <referenceContainer name="js">
-                <block class="Magento\Backend\Block\Template" template="Mijora_Venipak::manifest/list.phtml" name="mijora_venipak_manifest_list"/>
-        </referenceContainer>
         <referenceContainer name="content">
-            <block class="Mijora\Venipak\Block\Adminhtml\CallCourier" name="call_courier_block"/>
+            <block class="Mijora\Venipak\Block\Adminhtml\Order\TrackOrder" name="track_order_block"/>
         </referenceContainer>
     </body>
 </page>

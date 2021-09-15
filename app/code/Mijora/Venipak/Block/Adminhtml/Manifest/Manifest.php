@@ -85,11 +85,22 @@ class Manifest extends Extended {
                 ]
         );
         $this->addColumn(
-                'order.entity_id',
+                'manifest_number',
                 [
                     'header' => __('Number'),
                     'type' => 'text',
                     'index' => 'manifest_number',
+                    'header_css_class' => 'col-id',
+                    'column_css_class' => 'col-id',
+                ]
+        );
+        $this->addColumn(
+                'manifest_orders',
+                [
+                    'header' => __('Orders'),
+                    'type' => 'text',
+                    'index' => 'manifest_number',
+                    'renderer' => 'Mijora\Venipak\Block\Adminhtml\Grid\Renderer\ManifestOrders',
                     'header_css_class' => 'col-id',
                     'column_css_class' => 'col-id',
                 ]
@@ -119,6 +130,15 @@ class Manifest extends Extended {
                     'header' => __('Created At'),
                     'index' => 'created_at',
                     'type' => 'datetime',
+                ]
+        );
+        $this->addColumn(
+                'closed',
+                [
+                    'header' => __('Is closed'),
+                    'index' => 'is_closed',
+                    'type' => 'text',
+                    'renderer' => 'Mijora\Venipak\Block\Adminhtml\Grid\Renderer\YesNo',
                 ]
         );
         $this->addColumn(

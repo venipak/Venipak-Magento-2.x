@@ -77,16 +77,6 @@ class Grid extends Extended {
 
     protected function _prepareColumns() {
         $this->addColumn(
-                'select',
-                [
-                    'header_css_class' => 'a-center',
-                    'type' => 'checkbox',
-                    'name' => 'id',
-                    'align' => 'center',
-                    'index' => 'id',
-                ]
-        );
-        $this->addColumn(
                 'id',
                 [
                     'header' => __('ID'),
@@ -142,6 +132,7 @@ class Grid extends Extended {
                     'index' => 'id',
                     'type' => 'text',
                     'renderer' => 'Mijora\Venipak\Block\Adminhtml\Grid\Renderer\PrintLabels',
+                    'filter' => false
                 ]
         );
         $this->addColumn(
@@ -151,6 +142,17 @@ class Grid extends Extended {
                     'index' => 'id',
                     'type' => 'text',
                     'renderer' => 'Mijora\Venipak\Block\Adminhtml\Grid\Renderer\GenerateLabels',
+                    'filter' => false
+                ]
+        );
+        $this->addColumn(
+                'action.track',
+                [
+                    'header' => '',
+                    'index' => 'id',
+                    'type' => 'text',
+                    'renderer' => 'Mijora\Venipak\Block\Adminhtml\Grid\Renderer\OrderTracking',
+                    'filter' => false
                 ]
         );
         return parent::_prepareColumns();

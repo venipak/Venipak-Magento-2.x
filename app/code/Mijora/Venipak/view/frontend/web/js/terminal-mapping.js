@@ -722,12 +722,14 @@ var DOMManipulator = /*#__PURE__*/function () {
 
         _this2.searchNearestDebounce(e.target.value, e.keyCode == '13');
       });
+      /*
       this.UI.modal.querySelector('#terminal-search-radius').addEventListener('keyup', function (e) {
         e.preventDefault();
         e.stopPropagation();
         var search_term = (_this2._lastSearchTerm !== undefined ? _this2._lastSearchTerm : '');
         _this2.searchNearestDebounce(search_term, e.keyCode == '13');
       });
+        */
       this.UI.modal.querySelector('.tmjs-search-btn').addEventListener('click', function (e) {
         e.preventDefault();
         e.stopPropagation();
@@ -872,7 +874,7 @@ var DOMManipulator = /*#__PURE__*/function () {
         var template = "<span class=\"tmjs-terminal-name\">".concat(loc.name, ", ").concat(loc.address);
 
         if (typeof loc.distance != 'undefined' && loc.distance !== null) {
-          template += "<span class=\"tmjs-terminal-distance\"><img src=\"".concat(_this3.TMJS.imagePath, "gps.svg\" width=\"13\">").concat(loc.distance.toFixed(2), " Km.</span>");
+          template += "<span class=\"tmjs-terminal-distance\"><img src=\"".concat(_this3.TMJS.imagePath, "arrow.svg\" width=\"13\">").concat(loc.distance.toFixed(2), " Km.</span>");
         }
 
         template += "</span><div class=\"tmjs-terminal-info\"><p class=\"tmjs-terminal-comment\">";

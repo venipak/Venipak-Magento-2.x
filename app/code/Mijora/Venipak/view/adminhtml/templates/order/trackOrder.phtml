@@ -1,0 +1,76 @@
+<div id="venipak-track-order-modal" style="display: none">
+
+    <form action="<?= $block->escapeUrl($block->getFormUrl()) ?>" method="post"
+          id="venipak-track-order-form">
+        <input type ="hidden" name ="id" value =""  id = "venipak_order_id"/>
+
+    </form>
+    <div class ="content"></div>
+</div>
+<script>
+    require(
+            [
+                'jquery',
+                'Magento_Ui/js/modal/modal'
+            ],
+            function (
+                    $,
+                    modal
+                    ) {
+                var options = {
+                    type: 'popup',
+                    responsive: true,
+                    innerScroll: true,
+                    title: '<?= __('Shipment tracking') ?>',
+                    modalClass: 'custom-modal',
+                    buttons: [{
+                            text: $.mage.__('Close'),
+                            class: '',
+                            click: function () {
+                                this.closeModal();
+                            }
+                        }]
+                };
+
+                var popup = modal(options, $('#venipak-track-order-modal'));
+                $(".venipak-order-tracking").click(function (e) {
+                    e.preventDefault();
+                    var id = $(this).attr('data-id');
+                    $('#venipak_order_id').val(id);
+                    $("#venipak-track-order-modal").modal('openModal');
+                    
+                    $('#venipak-track-order-form').append($('<input>', {
+                        'name': 'form_key',
+                        'value': window.FORM_KEY,
+                        'type': 'hidden'
+                    }));
+                    $('#venipak-track-order-form').submit();
+                });
+
+
+
+                $("#venipak-track-order-form").submit(function (e) {
+
+                    e.preventDefault(); // avoid to execute the actual submit of the form.
+
+                    var form = $(this);
+                    var url = form.attr('action');
+
+                    $.ajax({
+                        type: "POST",
+                        url: url,
+                        data: form.serialize(), 
+                        dataType: 'json',
+                        success: function (data)
+                        {
+                            $('#venipak-track-order-modal .content').html(data.html);
+                        }
+                    });
+
+
+                });
+
+            }
+
+    );
+</script>

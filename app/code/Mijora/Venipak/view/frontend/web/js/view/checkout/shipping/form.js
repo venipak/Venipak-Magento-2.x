@@ -27,16 +27,20 @@ define([
 
         },
         hideSelect: function () {
+            //console.log('hide');
             var method = quote.shippingMethod();
             var selectedMethod = method != null ? method.carrier_code + '_' + method.method_code : null;
-            
-            this.hideCourier(selectedMethod);
-            this.hidePickup(selectedMethod);
+            if ($('#checkout-step-shipping_method .venipak_courrier_data').length === 0 && $('#checkout-step-shipping_method .mjvp-pp-container').length === 0){
+                this.reloadPickupPoints();
+            } else {
+                this.hideCourier(selectedMethod);
+                this.hidePickup(selectedMethod);
+            }
         },
         hideCourier: function (selectedMethod) {
-            if ($('#s_method_venipak_COURIER').length > 0 && $('#checkout-step-shipping_method .venipak_courrier_data') === 0) {
+            if ($('#s_method_venipak_COURIER').length > 0 && $('#checkout-step-shipping_method .venipak_courrier_data').length === 0) {
                 setTimeout(function (that, selectedMethod) {
-                    that.hidePickup(selectedMethod);
+                    that.hideCourier(selectedMethod);
                 }, 1000, this, selectedMethod);
             } else {
                 if (selectedMethod === 'venipak_COURIER') {
@@ -48,7 +52,7 @@ define([
 
         },
         hidePickup: function (selectedMethod) {
-            if ($('#s_method_venipak_PICKUP_POINT').length > 0 && $('#checkout-step-shipping_method .mjvp-pp-container') === 0) {
+            if ($('#s_method_venipak_PICKUP_POINT').length > 0 && $('#checkout-step-shipping_method .mjvp-pp-container').length === 0) {
                 setTimeout(function (that, selectedMethod) {
                     that.hidePickup(selectedMethod);
                 }, 1000, this, selectedMethod);
@@ -62,9 +66,18 @@ define([
 
         },
         moveSelect: function () {
+            //console.log('move');
+            
+            
+            
             var move_after = false;
             var container = $('#onepage-checkout-shipping-method-additional-load .mjvp-pp-container');
             if (container.length > 0) {
+                mjvp_pickup_container = container;
+            }
+            if (mjvp_pickup_container !== null){
+                container = mjvp_pickup_container;
+                $('#pickup-select-location').remove();
                 var row = $.parseHTML('<tr><td colspan = "4" style = "border-top: none; padding-top: 0px"></td></tr>');
                 move_after = false;
                 if ($('#s_method_venipak_PICKUP_POINT').length > 0) {
@@ -76,7 +89,11 @@ define([
                     if ($('#pickup-select-location').length == 0) {
                         $('<tr id = "pickup-select-location" ><td colspan = "4" style = "border-top: none; padding-top: 0px"></td></tr>').insertAfter(move_after);
                     }
-                    container.appendTo($('#pickup-select-location td'));
+                    if ($('#pickup-select-location #mjvp-pickup-select-modal .tmjs-container').length === 0){
+                        container.appendTo($('#pickup-select-location td'));
+
+                        mjvp_pickup_el = $('#pickup-select-location #mjvp-pickup-select-modal')[0];
+                    }
                 }
             }
 
@@ -87,6 +104,10 @@ define([
             move_after = false;
             var courier_container = $('#onepage-checkout-shipping-method-additional-load .venipak_courrier_data');
             if (courier_container.length > 0) {
+                mjvp_courier_container = courier_container;
+            }
+            if (mjvp_courier_container !== null){
+                courier_container = mjvp_courier_container;
                 if ($('#s_method_venipak_COURIER').length > 0) {
                     move_after = $('#s_method_venipak_COURIER').parents('tr');
                 } else if ($('#label_method_COURIER_venipak').length > 0) {
@@ -136,7 +157,8 @@ define([
         },
 
         initMap: function () {
-            if ($('#onepage-checkout-shipping-method-additional-load .mjvp-pp-container').length > 0 
+            if ($('#onepage-checkout-shipping-method-additional-load #tmjs-modal-template').length>0 && 
+                    $('#onepage-checkout-shipping-method-additional-load .mjvp-pp-container').length > 0 
                     && (
                     $('#s_method_venipak_PICKUP_POINT').length > 0 
                     || $('#s_method_venipak_COURIER').length > 0)
@@ -161,6 +183,7 @@ define([
 
             quote.shippingMethod.subscribe(function (method) {
                 this.hideSelect();
+                
                 /*
                  var selectedMethod = method != null ? method.carrier_code + '_' + method.method_code : null;
                  if (selectedMethod == 'venipak_PARCEL_TERMINAL') {
@@ -177,11 +200,17 @@ define([
             mjvp_city = quote.shippingAddress().city;
             mjvp_country_code = quote.shippingAddress().countryId;
             mjvp_terminals = list;
-            mjvp_map_template = $('#onepage-checkout-shipping-method-additional-load #tmjs-modal-template').html();
-            $('#onepage-checkout-shipping-method-additional-load #tmjs-modal-template').remove();
+            if (mjvp_map_template === ''){
+                mjvp_map_template = $('#onepage-checkout-shipping-method-additional-load #tmjs-modal-template').html();
+                $('#onepage-checkout-shipping-method-additional-load #tmjs-modal-template').remove();
+            }
             mjvp_imgs_url = require.toUrl('Mijora_Venipak/images/');
             mjvp_front_controller_url = urlBuilder.build('venipak/frontend/front');
             mjvp_quote_id = quote.getQuoteId();
+            mjvp_weight = 0.0;
+            $.each(quote.getItems(), function(index,el){
+                mjvp_weight += parseFloat(el.row_weight);
+            });
             
             mjvp_terminal_select_translates = {
                 'modal_header': t('Terminal map'),
@@ -194,13 +223,18 @@ define([
                 'nothing_found': t('Nothing found'),
                 'no_cities_found': t('There were no cities found for your search term'),
                 'geolocation_not_supported': t('Geolocation is not supported'),
-                'select_pickup_point': t('Select a pickup point')
+                'select_pickup_point': t('Select a pickup point'),
+                'select_btn': t('Select')
             };
+            if (mjvp_modal_container === null && $('#onepage-checkout-shipping-method-additional-load #mjvp-pickup-select-modal').length > 0){
+                mjvp_modal_container = $('#onepage-checkout-shipping-method-additional-load #mjvp-pickup-select-modal');
+            }
             
-            venipak_custom_modal();
-            $('.tmjs-search-input').removeAttr('disabled');
             this.moveSelect();
-
+            if ($('#pickup-select-location #mjvp-pickup-select-modal .tmjs-container').length === 0){
+                venipak_custom_modal();
+            }
+            $('.tmjs-search-input, .mjvp-pickup-filter, .venipak_courrier_data input, .venipak_courrier_data select').removeAttr('disabled');
         },
 
         reloadPickupPoints: function () {

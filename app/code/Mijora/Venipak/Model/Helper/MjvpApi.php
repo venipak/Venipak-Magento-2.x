@@ -19,6 +19,10 @@ class MjvpApi {
         $this->cVenipak = new MjvpVenipak();
         $this->size = 'a4';
     }
+    
+    public function setTestMode() {
+        $this->cVenipak = new MjvpVenipak(true);
+    }
 
     public function setApiId($apiId) {
         $this->apiId = $apiId;
@@ -34,6 +38,10 @@ class MjvpApi {
     
     public function setSize($size) {
         $this->size = $size;
+    }
+    
+    public function getTracking($tracking_code, $tracking_type = 'track_single', $format = 'csv'){
+        return $this->cVenipak->getTrackingShipment($tracking_code, $tracking_type, $format);
     }
 
     /**

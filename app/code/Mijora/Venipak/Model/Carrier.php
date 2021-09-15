@@ -162,6 +162,9 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
         $this->trackFactory = $trackInterfaceFactory;
         $this->XMLparser = $parser;
         $this->api = $api;
+        
+        
+
         $this->productFactory = $productFactory;
         parent::__construct(
                 $scopeConfig,
@@ -181,6 +184,10 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
                 $stockRegistry,
                 $data
         );
+        
+        if ($this->getConfigFlag('test_mode')) {
+            $this->api->setTestMode();
+        }
     }
 
     /**
@@ -196,68 +203,68 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
         }
 
         $result = $this->_rateFactory->create();
-        
+
         $weight = $request->getPackageWeight();
         $packageValue = $request->getBaseCurrency()->convert($request->getPackageValueWithDiscount(), $request->getPackageCurrency());
         $packageValue = $request->getPackageValueWithDiscount();
-        
+
         $this->_updateFreeMethodQuote($request);
         $isFreeEnabled = $this->getConfigData('free_shipping_enable');
         $allowedMethods = explode(',', $this->getConfigData('allowed_methods'));
         $freeFrom = $this->getConfigData('free_shipping_subtotal');
-        
+
         $max_weight = $this->getConfigData('max_package_weight');
-        
-        if ($weight > $max_weight){
+
+        if ($weight > $max_weight) {
             return false;
         }
-        
+
         $courier_price = $this->getConfigData('courier_price');
         $pickup_point_price = $this->getConfigData('pickup_point_price');
-        
+
         $isPriceByCountry = $this->getConfigData('price_by_country');
-        
+
         $country_id = $this->_checkoutSession->getQuote()
-                    ->getShippingAddress()
-                    ->getCountryId();
-        if ($isPriceByCountry){
-            switch($country_id){
-                case 'LT': 
+                ->getShippingAddress()
+                ->getCountryId();
+        if ($isPriceByCountry) {
+            switch ($country_id) {
+                case 'LT':
                     $courier_price = $this->getConfigData('lt_courier_price');
                     $pickup_point_price = $this->getConfigData('lt_pickup_point_price');
                     break;
-                case 'LV': 
+                case 'LV':
                     $courier_price = $this->getConfigData('lv_courier_price');
                     $pickup_point_price = $this->getConfigData('lv_pickup_point_price');
                     break;
-                case 'EE': 
+                case 'EE':
                     $courier_price = $this->getConfigData('ee_courier_price');
                     $pickup_point_price = $this->getConfigData('ee_pickup_point_price');
                     break;
-                case 'PL': 
+                case 'PL':
                     $courier_price = $this->getConfigData('pl_courier_price');
                     $pickup_point_price = $this->getConfigData('pl_pickup_point_price');
                     break;
             }
         }
-        
+
         $keyword = $this->getConfigData('ignore_keyword');
-        if (trim($keyword)){
-            foreach ($this->_checkoutSession->getQuote()->getItemsCollection() as $item){
+        if (trim($keyword)) {
+            foreach ($this->_checkoutSession->getQuote()->getItemsCollection() as $item) {
                 $product = $this->productFactory->create();
                 $product_id = $item->getProductId();
                 $product->load($product_id);
                 $description = $product->getDescription();
-                if (stripos($description, $keyword) !== false){
+                if (stripos($description, $keyword) !== false) {
                     //found keyword, no shipping possible
                     return false;
                 }
             }
         }
-        
+
         $courier_price = $this->parsePriceRange($courier_price, $weight, 5);
         $pickup_point_price = $this->parsePriceRange($pickup_point_price, $weight, 5);
-        
+
         foreach ($allowedMethods as $allowedMethod) {
             $method = $this->_rateMethodFactory->create();
 
@@ -265,7 +272,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
             $method->setCarrierTitle($this->getConfigData('title'));
 
             $method->setMethod($allowedMethod);
-            $method->setMethodTitle($this->getCode('method', $allowedMethod));            
+            $method->setMethodTitle($this->getCode('method', $allowedMethod));
 
             if ($allowedMethod == "COURIER") {
                 $amount = $courier_price;
@@ -283,22 +290,22 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
         }
         return $result;
     }
-    
-    private function parsePriceRange($price_data, $weight, $defaultPrice = 5){
-        if (stripos($price_data, ':') !== false){
+
+    private function parsePriceRange($price_data, $weight, $defaultPrice = 5) {
+        if (stripos($price_data, ':') !== false) {
             $rows = explode('|', $price_data);
-            foreach ($rows as $row){
+            foreach ($rows as $row) {
                 $data = explode(':', $row);
                 //skip if array not 3 size
-                if (count($data) != 3){
+                if (count($data) != 3) {
                     continue;
                 }
-                if ($weight > $data[0] && $weight <= $data[1]){
+                if ($weight > $data[0] && $weight <= $data[1]) {
                     return $data[2];
                 }
             }
         } else {
-            return (float)$price_data;
+            return (float) $price_data;
         }
         return $defaultPrice;
     }
@@ -403,7 +410,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
         $this->api->setUsername($this->getConfigData('account'));
         $this->api->setPassword($this->getConfigData('password'));
         $order_packages_mapping = [];
-        
+
 
         $var = $this->variableFactory->create();
         $var->loadByCode('VENIPAK_DATA');
@@ -426,6 +433,15 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
             'manifest_name' => $this->getConfigData('shop_name'),
             'shipments' => array(),
         );
+
+        $venipakManifest = $this->venipakManifestFactory->create()->getCollection()->addFieldToSelect('*');
+        $venipakManifest->addFieldToFilter('is_closed', array('eq' => 0))->addFieldToFilter('created_at', array('like' => date('Y-m-d') . ' %'));
+        if (count($venipakManifest) > 0) {
+            $venipakManifest = $venipakManifest->getFirstItem();
+            $manifest['manifest_id'] = (int)substr($venipakManifest->getManifestNumber(),-3);
+        } else {
+            $venipakManifest = false;
+        }
 
         foreach ($ids as $id) {
             $order = $this->orderFactory->create();
@@ -456,9 +472,9 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
             $contact_person = $shippingAddress->getFirstname() . ' ' . $shippingAddress->getLastname();
             $contact_phone = $shippingAddress->getTelephone();
             $contact_email = $shippingAddress->getEmail();
-            
+
             $consignee_code = '';
-            if ($shippingAddress->GetVatId()){
+            if ($shippingAddress->GetVatId()) {
                 $consignee_code = $shippingAddress->GetVatId();
             }
 
@@ -477,7 +493,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
                     'cabinet_number' => $venipakOrder->getCabinetNumber(),
                     'warehouse_number' => $venipakOrder->getWarehouseNumber(),
                     'carrier_call' => $venipakOrder->getCallBeforeDelivery(),
-                    'delivery_time' => 'nwd'.$venipakOrder->getDeliveryTime(),
+                    'delivery_time' => 'nwd' . $venipakOrder->getDeliveryTime(),
                     'return_doc' => $venipakOrder->getReturnSignedDocument() ? 1 : 0,
                     'cod' => $venipakOrder->getIsCod() ? $venipakOrder->getCodAmount() : '',
                     'cod_type' => $venipakOrder->getIsCod() ? $currency : '',
@@ -485,7 +501,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
             }
             if ($order->getData('shipping_method') == 'venipak_PICKUP_POINT') {
                 $terminal_info = $this->getOrderPickup($order);
-                if (!$terminal_info){
+                if (!$terminal_info) {
                     throw new \Exception(__('Terminal not found for order'));
                 }
                 $consignee = [
@@ -512,10 +528,15 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
         $manifest_xml = $this->api->buildManifestXml($manifest);
         if ($this->isXMLContentValid($manifest_xml)) {
             $status = $this->api->sendXml($manifest_xml);
-            if (!isset($status['error'])){
-                $manifest = $this->venipakManifestFactory->create();
-                $manifest->setManifestNumber($this->api->getManifestNumber($counters['manifest_counter']));
-                $manifest->save();
+            if (!isset($status['error'])) {
+
+                if (!$venipakManifest) {
+                    $venipakManifest = $this->venipakManifestFactory->create();
+                    $venipakManifest->setManifestNumber($this->api->getManifestNumber($counters['manifest_counter']));
+                    $venipakManifest->save();
+                    $counters['manifest_counter']++;
+                }
+
                 $var->addData(['plain_value' => json_encode($counters)]);
                 $var->save();
                 if (isset($status['text']) && is_array($status['text'])) {
@@ -524,28 +545,27 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
                     foreach ($order_packages_mapping as $order_id => $mapping) {
 
                         $order_labels = array_slice($status['text'], $offset, $mapping);
-                        $this->saveOrderData($order_id, $order_labels, $manifest);
+                        $this->saveOrderData($order_id, $order_labels, $venipakManifest);
 
                         $offset += $mapping;
                     }
                 } elseif (isset($status['text'])) {
                     $order_id = array_key_first($order_packages_mapping);
-                    $this->saveOrderData($order_id, [$status['text']], $manifest);
-                } 
-                $counters['manifest_counter']++;
+                    $this->saveOrderData($order_id, [$status['text']], $venipakManifest);
+                }
             } else {
                 $error_text = '';
-                foreach($status['error'] as $error){
+                foreach ($status['error'] as $error) {
                     $error_text .= $status['error']['text'] . '<br/>';
                 }
                 throw new \Exception($error_text);
             }
         }
-        
+
         return true;
     }
-    
-    public function callCourier($invitation_data){
+
+    public function callCourier($invitation_data) {
         $this->api->setApiId($this->getConfigData('api_id'));
         $this->api->setUsername($this->getConfigData('account'));
         $this->api->setPassword($this->getConfigData('password'));
@@ -553,9 +573,10 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
         if ($this->isXMLContentValid($courier_invitation_xml)) {
             $status = $this->api->sendXml($courier_invitation_xml);
             if (!isset($status['error']) && $status['text']) {
+                
             } else {
                 $error_text = '';
-                foreach($status['error'] as $error){
+                foreach ($status['error'] as $error) {
                     $error_text .= $status['error']['text'] . '<br/>';
                 }
                 throw new \Exception($error_text);
@@ -601,14 +622,14 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
                 $shipment->save();
                 $shipment->getOrder()->save();
                 $track = $this->trackFactory->create()->setNumber(
-                    $label
-                )->setCarrierCode(
-                    $order->getData('shipping_method')
-                )->setTitle(
-                    'Venipak'
+                                $label
+                        )->setCarrierCode(
+                                $order->getData('shipping_method')
+                        )->setTitle(
+                        'Venipak'
                 );
                 $pdf = $this->printLabels([$label]);
-                if ($pdf){
+                if ($pdf) {
                     $shipment->setShippingLabel($pdf);
                 }
                 $shipment->addTrack($track);
@@ -620,8 +641,8 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
             }
         }
     }
-    
-    public function printLabels($labels){
+
+    public function printLabels($labels) {
         $this->api->setApiId($this->getConfigData('api_id'));
         $this->api->setUsername($this->getConfigData('account'));
         $this->api->setPassword($this->getConfigData('password'));
@@ -629,14 +650,19 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
         $pdf = $this->api->getLabelPdf($labels);
         return $pdf;
     }
-    
-    public function printManifest($number){
+
+    public function printManifest($number) {
         $this->api->setApiId($this->getConfigData('api_id'));
         $this->api->setUsername($this->getConfigData('account'));
         $this->api->setPassword($this->getConfigData('password'));
         $this->api->setSize($this->getConfigData('label_size'));
         $pdf = $this->api->getManifestPdf($number);
         return $pdf;
+    }
+
+    public function getVenipakTracking($labels, $type = 'track_all') {
+        $trackingData = $this->api->getTracking($labels, $type);
+        return $trackingData;
     }
 
     private function getOrderPickup($order) {
@@ -655,6 +681,10 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
             }
         }
         return false;
+    }
+    
+    public function getTerminals($country){
+        return $this->api->getTerminals($country);
     }
 
     public function isXMLContentValid($xmlContent, $version = '1.0', $encoding = 'utf-8') {

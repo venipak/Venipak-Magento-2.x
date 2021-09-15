@@ -31,7 +31,7 @@ define([
                 if (selectedShippingMethod.method_code === 'PICKUP_POINT' &&
                     !terminal) {
                     globalMessageList.addErrorMessage(
-                        {message: $t('Select Venipak pickup point')});
+                        {message: $t('Select Venipak pickup point!')});
                     jQuery(window).scrollTop(0);
                     return originalAction();
                 }

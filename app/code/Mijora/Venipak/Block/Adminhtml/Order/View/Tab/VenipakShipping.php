@@ -2,8 +2,6 @@
 
 namespace Mijora\Venipak\Block\Adminhtml\Order\View\Tab;
 
-use Mijora\Venipak\Model\Helper\MjvpApi;
-
 class VenipakShipping extends \Magento\Backend\Block\Template implements \Magento\Backend\Block\Widget\Tab\TabInterface {
 
     /**
@@ -22,6 +20,7 @@ class VenipakShipping extends \Magento\Backend\Block\Template implements \Magent
     protected $orderFactory;
     protected $warehouseFactory;
     protected $api;
+    protected $carrier;
     
     public $urlBuilder;
 
@@ -36,14 +35,14 @@ class VenipakShipping extends \Magento\Backend\Block\Template implements \Magent
             array $data = [],
             \Mijora\Venipak\Model\OrderFactory $orderFactory,
             \Mijora\Venipak\Model\WarehouseFactory $warehouseFactory,
-            MjvpApi $api,
-            \Magento\Framework\UrlInterface $urlBuilder
+            \Magento\Framework\UrlInterface $urlBuilder,
+            \Mijora\Venipak\Model\Carrier $carrier
     ) {
         $this->coreRegistry = $registry;
         $this->orderFactory = $orderFactory;
         $this->warehouseFactory = $warehouseFactory;
-        $this->api = $api;
         $this->urlBuilder = $urlBuilder;
+        $this->carrier = $carrier;
         parent::__construct($context, $data);
     }
     
@@ -56,7 +55,7 @@ class VenipakShipping extends \Magento\Backend\Block\Template implements \Magent
     public function getTerminals() {
         $order = $this->getOrder();
         $shippingAddress = $order->getShippingAddress();
-        return $this->api->getTerminals($shippingAddress->getCountryId());
+        return $this->carrier->getTerminals($shippingAddress->getCountryId());
     }
 
     public function getCurrentTerminal() {
@@ -64,6 +63,7 @@ class VenipakShipping extends \Magento\Backend\Block\Template implements \Magent
         $order = $this->getOrder();
         $shippingAddress = $order->getShippingAddress();
         $data =  @json_decode($shippingAddress->getVenipakData());
+        
         if (is_object($data)){
             return $data->pickupPoint;
         }
@@ -100,6 +100,8 @@ class VenipakShipping extends \Magento\Backend\Block\Template implements \Magent
             $model->setIsCod(1);
             $model->setCodAmount(round($order->getGrandTotal(), 2));
         }
+        $model->setNumberOfPackages(1);
+        $model->setWeight($order->getWeight());
         $model->save();
         return $model;
     }

@@ -8,16 +8,22 @@ var mjvp_terminals = [];
 var address_query = '';
 var mjvp_front_controller_url = '';
 var mjvp_quote_id = '';
+var mjvp_weight = 0;
+var mjvp_courier_container = null;
+var mjvp_pickup_container = null;
+var mjvp_pickup_el = null;
+var mjvp_modal_container = null;
 var venipak_custom_modal = function () {
-    let mjvp_map_container = document.getElementById('mjvp-pickup-select-modal');
+    //let mjvp_map_container = document.getElementById('mjvp-pickup-select-modal');
     let tmjs = null;
-
-    if (typeof (mjvp_map_container) != 'undefined' && mjvp_map_container != null) {
+    console.log(mjvp_pickup_el);
+    if (mjvp_pickup_el !== null){//typeof (mjvp_map_container) != 'undefined' && mjvp_map_container != null) {
         tmjs = new TerminalMappingMjvp('https://venipak.uat.megodata.com/ws');
         tmjs.setImagesPath(mjvp_imgs_url);
         tmjs.setTranslation(mjvp_terminal_select_translates);
 
-        tmjs.dom.setContainerParent(document.getElementById('mjvp-pickup-select-modal'));
+        //tmjs.dom.setContainerParent(document.getElementById('mjvp-pickup-select-modal'));
+        tmjs.dom.setContainerParent(mjvp_pickup_el);
         tmjs.terminals_cache = null;
         tmjs.init({
             country_code: mjvp_country_code,

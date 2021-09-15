@@ -13,3 +13,9 @@
 .no-style {
     list-style: none;
 }
+#venipak-track-order-modal td, #venipak-track-order-modal th {
+    padding: 5px;
+}
+#venipak-track-order-modal table {
+    margin-bottom: 20px;
+}
