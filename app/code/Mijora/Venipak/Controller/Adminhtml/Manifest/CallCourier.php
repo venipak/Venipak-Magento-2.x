@@ -13,6 +13,7 @@ class CallCourier extends \Magento\Backend\App\Action {
     protected $venipakWarehouseFactory;
     protected $venipakOrderFactory;
     protected $carrier;
+    protected $json;
 
     public function __construct(
             \Magento\Backend\App\Action\Context $context,
@@ -24,7 +25,8 @@ class CallCourier extends \Magento\Backend\App\Action {
             \Magento\Framework\Registry $coreRegistry,
             \Magento\Framework\Message\ManagerInterface $messageManager,
             \Magento\Framework\Controller\ResultFactory $resultFactory,
-            \Mijora\Venipak\Model\Carrier $carrier
+            \Mijora\Venipak\Model\Carrier $carrier,
+            \Magento\Framework\Controller\Result\JsonFactory $json
     ) {
         parent::__construct($context);
         $this->resultPageFactory = $resultPageFactory;
@@ -36,12 +38,14 @@ class CallCourier extends \Magento\Backend\App\Action {
         $this->venipakWarehouseFactory = $venipakWarehouseFactory;
         $this->venipakOrderFactory = $venipakOrderFactory;
         $this->carrier = $carrier;
+        $this->json = $json;
     }
 
     public function execute() {
+        $response = [];
         try {
             $formData = $this->getRequest()->getParam('venipakmanifest');
-
+            $resultJson = $this->json->create();
 
 
             if (!isset($formData['id']) || !$formData['id']) {
@@ -51,8 +55,15 @@ class CallCourier extends \Magento\Backend\App\Action {
             $model = $this->venipakManifestFactory->create();
             $model->load($formData['id'], 'manifest_id');
 
-            if (!$formData['arrival_from'] || !$formData['arrival_to'] || !$formData['warehouse']) {
-                throw new \Exception(__('Arrival date and warehouse is required'));
+            if (!$formData['arrival_from'] || !$formData['arrival_to'] || !$formData['warehouse'] || !$formData['weight']) {
+                throw new \Exception(__('Arrival date, weight and warehouse is required'));
+            }
+            
+            $from = strtotime($formData['arrival_from']);
+            $to = strtotime($formData['arrival_to']);
+            $diff = ($to - $from)/3600;
+            if ($diff < 2){
+                throw new \Exception(__('There is minimum 2 hours gap between from and to dates required'));
             }
 
             $modelData = [
@@ -60,24 +71,20 @@ class CallCourier extends \Magento\Backend\App\Action {
                 'arrival_date_to' => $formData['arrival_to'],
                 'warehouse_id' => $formData['warehouse'],
                 'comment' => $formData['comment'],
+                'weight' => $formData['weight'],
             ];
 
-
-
             $model->addData($modelData);
-            //$this->makeCall($model, $formData);
+            $this->makeCall($model, $formData);
 
             $model->save();
-            $this->messageManager->addSuccess(__('Courier called'));
+            
+            $response['success'] = __('Courier called');
         } catch (\Exception $e) {
-            $this->messageManager->addError($e->getMessage());
-            echo $e->getMessage(); exit;
+            $response['error'] = $e->getMessage();
         }
 
-        $resultFactory = $this->resultFactory->create(\Magento\Framework\Controller\ResultFactory::TYPE_REDIRECT);
-        $resultFactory->setUrl($this->getUrl('mijora_venipak/manifest/index'));
-
-        return $resultFactory;
+        return $resultJson->setData($response);
     }
 
     private function makeCall($manifest, $formData) {

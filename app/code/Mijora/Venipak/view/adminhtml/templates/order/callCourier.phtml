@@ -1,5 +1,6 @@
 <div id="venipak-call-courier-modal" style="display: none">
-
+    <div class="message message-error" style = "margin:10px 0; display: none;"></div>
+    <div class="message message-success" style = "margin:10px 0; display: none;"></div>
     <form action="<?= $block->escapeUrl($block->getFormUrl()) ?>" method="post"
           id="venipak-call-courier-form">
         <input type ="hidden" name ="venipakmanifest[id]" value =""  id = "venipak_manifest_id"/>
@@ -114,6 +115,50 @@
                     $('#venipak-call-courier-form').submit();
 
                 });
+                
+                var showError = function(text){
+                    $("#venipak-call-courier-modal .message-error").html(text).fadeIn();
+                };
+                
+                var showSuccess = function(text){
+                    $("#venipak-call-courier-modal .message-success").html(text).fadeIn();
+                };
+                
+                var hideMessages = function(){
+                    $("#venipak-call-courier-modal .message-error").html('').hide();
+                    $("#venipak-call-courier-modal .message-success").html('').hide();
+                };
+                
+                $("#venipak-call-courier-form").submit(function (e) {
+                    hideMessages();
+                    e.preventDefault(); // avoid to execute the actual submit of the form.
+
+                    var form = $(this);
+                    var url = form.attr('action');
+
+                    $.ajax({
+                        type: "POST",
+                        url: url,
+                        data: form.serialize(), 
+                        dataType: 'json',
+                        success: function (data)
+                        {
+                            if (data.error !== undefined){
+                                showError(data.error);
+                            }
+                            if (data.success !== undefined){
+                                showSuccess(data.success);
+                                if(manifest_idJsObject !== undefined){
+                                    manifest_idJsObject.doFilter();
+                                }
+                            }
+                        }
+                    });
+
+
+                });
+                
+                
 
             }
 

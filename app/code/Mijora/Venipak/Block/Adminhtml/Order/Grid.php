@@ -159,7 +159,7 @@ class Grid extends Extended {
     }
 
     public function getGridUrl() {
-        return $this->getUrl('*/*/actionName', ['_current' => true]);
+        return $this->getUrl('*/*/index', ['_current' => true]);
     }
 
 }

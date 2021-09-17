@@ -121,6 +121,8 @@ class Manifest extends Extended {
                     'header' => __('Courier arrival'),
                     'index' => 'manifest_id',
                     'type' => 'text',
+                    'sortable' => false,
+                    'filter' => false,
                     'renderer' => 'Mijora\Venipak\Block\Adminhtml\Grid\Renderer\CourierArrival',
                 ]
         );
@@ -147,6 +149,8 @@ class Manifest extends Extended {
                     'header' => '',
                     'index' => 'manifest_id',
                     'type' => 'text',
+                    'sortable' => false,
+                    'filter' => false,
                     'renderer' => 'Mijora\Venipak\Block\Adminhtml\Grid\Renderer\PrintManifest',
                 ]
         );
@@ -168,7 +172,7 @@ class Manifest extends Extended {
     }
 
     public function getGridUrl() {
-        return $this->getUrl('*/*/actionName', ['_current' => true]);
+        return $this->getUrl('*/*/index', ['_current' => true]);
     }
 
 }
