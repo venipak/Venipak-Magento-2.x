@@ -83,6 +83,17 @@ class Form extends Generic {
                     ]
             );
         }
+        $fieldset->addField(
+                'default',
+                'select',
+                [
+                    'name' => 'default',
+                    'label' => __('Default'),
+                    'title' => __('Default'),
+                    'required' => false,
+                    'values' => array(1 => 'Yes', 0 => 'No')
+                ]
+        );
         $data = $model->getData();
         $form->setValues($data);
         $this->setForm($form);

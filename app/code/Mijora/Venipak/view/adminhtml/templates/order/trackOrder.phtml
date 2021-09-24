@@ -11,11 +11,15 @@
     require(
             [
                 'jquery',
-                'Magento_Ui/js/modal/modal'
+                'Magento_Ui/js/modal/modal',
+                'Magento_Ui/js/modal/alert',
+                'mage/translate'
             ],
             function (
                     $,
-                    modal
+                    modal,
+                    alertModal,
+                    t
                     ) {
                 var options = {
                     type: 'popup',
@@ -68,6 +72,33 @@
                     });
 
 
+                });
+                $(".generate_labels").click(function (e) {
+                    e.preventDefault();
+                    var url = $(this).attr('data-href');
+
+                    $.ajax({
+                        type: "GET",
+                        url: url,
+                        dataType: 'json',
+                        success: function (data)
+                        {
+                            if (data.error === true){
+                                alertModal({
+                                    title: t('Error'),
+                                    content: data.message,
+                                    modalClass: 'confirm error'
+                                });
+                            } else {
+                                alertModal({
+                                    title: t('Success'),
+                                    content: data.message,
+                                    modalClass: 'confirm success'
+                                });
+                                idJsObject.doFilter();
+                            }
+                        }
+                    });
                 });
 
             }

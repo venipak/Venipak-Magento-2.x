@@ -11,6 +11,7 @@
             <venipak>
                 <shipment_requesttype>0</shipment_requesttype>
                 <active>0</active>
+                <shop_id>0</shop_id>
                 <sallowspecific>0</sallowspecific>
                 <allowed_methods>COURIER,PICKUP_POINT</allowed_methods>
                 <cutoff_cost />

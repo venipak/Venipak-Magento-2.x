@@ -30,6 +30,11 @@
                     <label>Test mode</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
+                <field id="shop_id" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="0" >
+                    <label>Shop id</label>
+                    <validate>validate-number validate-zero-or-greater</validate>
+                    <comment>Shop id is used in manifest number generation, if you have more then 1 shop with same API ID, change this number, to be different in all shops. Max value 9</comment>
+                </field>
                 <field id="shop_name" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="0" >
                     <label>Shop name</label>
                 </field>

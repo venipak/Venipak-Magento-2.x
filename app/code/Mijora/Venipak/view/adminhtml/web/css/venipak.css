@@ -19,3 +19,9 @@
 #venipak-track-order-modal table {
     margin-bottom: 20px;
 }
+.modal-popup.confirm.error .modal-inner-wrap {
+    background-color: #fdc4c4;
+}
+.modal-popup.confirm.success .modal-inner-wrap {
+    background-color: #b8d08b;
+}

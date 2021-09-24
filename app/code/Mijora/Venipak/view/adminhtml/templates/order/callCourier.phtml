@@ -23,19 +23,27 @@
             </ul>
         </div>
         <div class = "row">
-            <div class ="col-m-6">
+            <div class ="col-m-4">
                 <div class="admin__field w100">
-                    <label for="venipakorder_arrival_from" class="admin__field-label"><?= __('Courier arrival time (from)') ?></label>
+                    <label for="venipakorder_arrival_date" class="admin__field-label"><?= __('Courier arrival date') ?></label>
                     <div class="admin__field-control">
-                        <input type ="text" name="venipakmanifest[arrival_from]" value ="" id="venipakorder_arrival_from" class="admin__control-text datetimepicker"/>
+                        <input type ="text" name="venipakmanifest[arrival_date]" value ="" id="venipakorder_arrival_date" class="admin__control-text datepicker arrival_date"/>
                     </div>
                 </div>
             </div>
-            <div class ="col-m-6">
+            <div class ="col-m-4">
+                <div class="admin__field w100">
+                    <label for="venipakorder_arrival_from" class="admin__field-label"><?= __('Courier arrival time (from)') ?></label>
+                    <div class="admin__field-control">
+                        <input type ="text" name="venipakmanifest[arrival_from]" value ="" id="venipakorder_arrival_from" class="admin__control-text datetimepicker arrival_from"/>
+                    </div>
+                </div>
+            </div>
+            <div class ="col-m-4">
                 <div class="admin__field w100">
                     <label for="venipakorder_arrival_to" class="admin__field-label"><?= __('Courier arrival time (to)') ?></label>
                     <div class="admin__field-control">
-                        <input type ="text" name="venipakmanifest[arrival_to]" value ="" id="venipakorder_arrival_to" class="admin__control-text datetimepicker"/>
+                        <input type ="text" name="venipakmanifest[arrival_to]" value ="" id="venipakorder_arrival_to" class="admin__control-text datetimepicker arrival_to"/>
                     </div>
                 </div>
             </div>
@@ -43,11 +51,22 @@
         <div class="admin__field">
             <label for="venipakorder_warehouse" class="admin__field-label"><?= __('Warehouse') ?></label>
             <div class="admin__field-control w100">
-                <?php $warehouses = $this->getWarehouses(); ?>
-                <select name="venipakmanifest[warehouse]" id="venipakorder_warehouse" class="admin__control-select">
+                <?php 
+                $warehouses = $this->getWarehouses();
+                $default_warehouse_id = false; 
+                $default_warehouse = $this->getDefaultWarehouse(); 
+                if (!$default_warehouse_id && $default_warehouse){
+                    $default_warehouse_id = $default_warehouse->getWarehouseId();
+                }
+                $selected = ''; 
+                ?>
+                <select name="venipakmanifest[warehouse]" id="venipakorder_warehouse" class="admin__control-select" data-default-warehouse = "<?= $default_warehouse_id; ?>">
                     <option value=""><?= __('Select warehouse'); ?></option>
                     <?php foreach ($warehouses as $warehouse): ?>
-                        <option value="<?= $warehouse['warehouse_id']; ?>"><?= $warehouse['name']; ?></option>
+                        <?php if (!$selected && $default_warehouse && $default_warehouse_id == $warehouse['warehouse_id']){
+                            $selected = 'selected = "selected"';
+                        } ?>
+                        <option value="<?= $warehouse['warehouse_id']; ?>" <?= $selected; ?>><?= $warehouse['name']; ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>
@@ -62,12 +81,20 @@
         'jquery',
         'mage/calendar'
     ], function ($) {
-        $('.datetimepicker').datetimepicker({
+        $('#venipak-call-courier-modal .datetimepicker').timepicker({
             dateFormat: 'yy-mm-dd',
             timeFormat: 'HH:mm',
+            stepMinute: 15,
+            hourMax: 22,
+            hourMin: 5,
             changeMonth: true,
             changeYear: true,
             showsTime: true
+        });
+        $('#venipak-call-courier-modal .datepicker').datepicker({
+            dateFormat: 'yy-mm-dd',
+            changeMonth: true,
+            changeYear: true
         });
     });
 </script>
@@ -102,7 +129,11 @@
                     var warehouse = $(this).attr('data-warehouse');
                     var id = $(this).attr('data-id');
                     $('#venipak_manifest_id').val(id);
-                    $('#venipakorder_warehouse').val(warehouse);
+                    if (warehouse){
+                        $('#venipakorder_warehouse').val(warehouse);
+                    } else {
+                        $('#venipakorder_warehouse').val($('#venipakorder_warehouse').attr('data-default-warehouse'));
+                    }
                     $("#venipak-call-courier-modal").modal('openModal');
                 });
 

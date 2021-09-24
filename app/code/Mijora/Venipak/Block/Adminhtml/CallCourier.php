@@ -45,5 +45,11 @@ class CallCourier extends \Magento\Backend\Block\Template {
         $collection = $warehouse->getCollection();
         return $collection->getData();
     }
+    
+    public function getDefaultWarehouse() {
+        $warehouse = $this->warehouseFactory->create();
+        $warehouse->load(1, 'default');
+        return $warehouse;
+    }
 
 }

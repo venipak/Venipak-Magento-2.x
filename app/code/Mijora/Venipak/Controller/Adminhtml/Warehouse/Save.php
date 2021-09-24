@@ -43,7 +43,7 @@ class Save extends Index {
             }
 
             $this->_getSession()->setFormData($formData);
-            $this->_redirect('*/*/edit', ['id' => $postsId]);
+            $this->_redirect('*/*/edit', ['id' => $model->getWarehouseId()]);
         }
     }
 

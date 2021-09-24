@@ -51,6 +51,12 @@ class VenipakShipping extends \Magento\Backend\Block\Template implements \Magent
         $collection = $warehouse->getCollection();
         return $collection->getData();
     }
+    
+    public function getDefaultWarehouse() {
+        $warehouse = $this->warehouseFactory->create();
+        $warehouse->load(1, 'default');
+        return $warehouse;
+    }
 
     public function getTerminals() {
         $order = $this->getOrder();
@@ -96,9 +102,13 @@ class VenipakShipping extends \Magento\Backend\Block\Template implements \Magent
             $model->setCallBeforeDelivery($data->callBeforeDelivery ?? null);
         }
         $payment_method = $order->getPayment()->getMethodInstance()->getCode();
-        if (stripos('cashondelivery', $payment_method) !== false) {
+        if (stripos('cashondelivery', $payment_method) !== false || stripos('venipak_cod', $payment_method) !== false) {
             $model->setIsCod(1);
             $model->setCodAmount(round($order->getGrandTotal(), 2));
+        }
+        $default_warehouse = $this->getDefaultWarehouse();
+        if ($default_warehouse){
+            $model->setWarehouseId($default_warehouse->getWarehouseId());
         }
         $model->setNumberOfPackages(1);
         $model->setWeight($order->getWeight());

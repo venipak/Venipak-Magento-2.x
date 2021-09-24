@@ -55,20 +55,20 @@ class CallCourier extends \Magento\Backend\App\Action {
             $model = $this->venipakManifestFactory->create();
             $model->load($formData['id'], 'manifest_id');
 
-            if (!$formData['arrival_from'] || !$formData['arrival_to'] || !$formData['warehouse'] || !$formData['weight']) {
+            if (!$formData['arrival_date'] || !$formData['arrival_from'] || !$formData['arrival_to'] || !$formData['warehouse'] || !$formData['weight']) {
                 throw new \Exception(__('Arrival date, weight and warehouse is required'));
             }
-            
+            $date = strtotime($formData['arrival_date']);
             $from = strtotime($formData['arrival_from']);
             $to = strtotime($formData['arrival_to']);
             $diff = ($to - $from)/3600;
-            if ($diff < 2){
-                throw new \Exception(__('There is minimum 2 hours gap between from and to dates required'));
+            if ($diff <= 2){
+                throw new \Exception(__('There is a minimum 2 hours gap between from and to dates required'));
             }
 
             $modelData = [
-                'arrival_date_from' => $formData['arrival_from'],
-                'arrival_date_to' => $formData['arrival_to'],
+                'arrival_date_from' => date('Y-m-d', $date) . ' ' . date('H:i:s', $from),
+                'arrival_date_to' => date('Y-m-d', $date) . ' ' . date('H:i:s', $to),
                 'warehouse_id' => $formData['warehouse'],
                 'comment' => $formData['comment'],
                 'weight' => $formData['weight'],

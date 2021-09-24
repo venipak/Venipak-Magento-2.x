@@ -16,7 +16,6 @@ var mjvp_modal_container = null;
 var venipak_custom_modal = function () {
     //let mjvp_map_container = document.getElementById('mjvp-pickup-select-modal');
     let tmjs = null;
-    console.log(mjvp_pickup_el);
     if (mjvp_pickup_el !== null){//typeof (mjvp_map_container) != 'undefined' && mjvp_map_container != null) {
         tmjs = new TerminalMappingMjvp('https://venipak.uat.megodata.com/ws');
         tmjs.setImagesPath(mjvp_imgs_url);

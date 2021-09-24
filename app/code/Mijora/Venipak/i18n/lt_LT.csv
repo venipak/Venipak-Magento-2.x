@@ -15,5 +15,7 @@ Until 10:00,Iki 10:00
 Until 12:00,Iki 12:00
 Door code (optional):,Durų kodas (neprivaloma):
 Cabinet number (optional):,Kabineto numeris (neprivaloma):
-Warehouse number (optional):,Sandėlio numeris (neprivaloma):,
+Warehouse number (optional):,Sandėlio numeris (neprivaloma):
 Call before delivery,Paskambinti prieš pristatant
+Courier,Kurjeris
+Pickup point,Paštomatas/atsiėmimo punktas

@@ -42,10 +42,10 @@ class BuildShipmentAjax extends \Magento\Backend\App\Action {
         $model->load($venipakOrderId, 'id');
         
         try {
-            
+            /*
             if ($model->getLabelNumber()){
                 throw new \Exception('Label has been genarated already');
-            }
+            }*/
             
             if ($this->carrier->doShipment([$model->getOrderId()])) {
                 return $resultJson->setData([

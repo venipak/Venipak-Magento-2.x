@@ -94,6 +94,8 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
     protected $trackFactory;
     protected $api;
     protected $productFactory;
+    private $venipakTracking = null;
+    private $venipakLabel = null;
 
     /**
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
@@ -162,8 +164,8 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
         $this->trackFactory = $trackInterfaceFactory;
         $this->XMLparser = $parser;
         $this->api = $api;
-        
-        
+
+
 
         $this->productFactory = $productFactory;
         parent::__construct(
@@ -184,7 +186,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
                 $stockRegistry,
                 $data
         );
-        
+
         if ($this->getConfigFlag('test_mode')) {
             $this->api->setTestMode();
         }
@@ -404,13 +406,28 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
         
     }
 
-    public function doShipment($ids) {
+    private function groupOrdersByWarehouse($ids) {
+        $grouped = [];
+        foreach ($ids as $id) {
+            $venipakOrder = $this->venipakOrderFactory->create();
+            $venipakOrder->load($id, 'order_id');
+            $warehouse_id = $venipakOrder->getWarehouseId();
+            if (!isset($grouped[$warehouse_id])) {
+                $grouped[$warehouse_id] = [];
+            }
+            $grouped[$warehouse_id][] = $venipakOrder;
+        }
+        return $grouped;
+    }
+
+    public function doShipment($ids, $magento_action = false) {
         $currency = $this->_storeManager->getStore()->getCurrentCurrency()->getCode();
         $this->api->setApiId($this->getConfigData('api_id'));
         $this->api->setUsername($this->getConfigData('account'));
         $this->api->setPassword($this->getConfigData('password'));
         $order_packages_mapping = [];
 
+        $result = new \Magento\Framework\DataObject();
 
         $var = $this->variableFactory->create();
         $var->loadByCode('VENIPAK_DATA');
@@ -427,138 +444,155 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
             $counters['manifest_date'] = date('Y-m-d');
             $counters['manifest_counter'] = 1;
         }
+        $shop_id = $this->getConfigData('shop_id');
 
-        $manifest = array(
-            'manifest_id' => $counters['manifest_counter'],
-            'manifest_name' => $this->getConfigData('shop_name'),
-            'shipments' => array(),
-        );
+        $grouped = $this->groupOrdersByWarehouse($ids);
 
-        $venipakManifest = $this->venipakManifestFactory->create()->getCollection()->addFieldToSelect('*');
-        $venipakManifest->addFieldToFilter('is_closed', array('eq' => 0))->addFieldToFilter('created_at', array('like' => date('Y-m-d') . ' %'));
-        if (count($venipakManifest) > 0) {
-            $venipakManifest = $venipakManifest->getFirstItem();
-            $manifest['manifest_id'] = (int)substr($venipakManifest->getManifestNumber(),-3);
-        } else {
-            $venipakManifest = false;
-        }
+        foreach ($grouped as $warehouse_id => $venipakOrders) {
 
-        foreach ($ids as $id) {
-            $order = $this->orderFactory->create();
-            $order->load($id);
-
-            $venipakOrder = $this->venipakOrderFactory->create();
-            $venipakOrder->load($order->getId(), 'order_id');
-
-            $shipment_pack = [];
-            $items = $order->getAllVisibleItems();
-            $packages = $venipakOrder->getNumberOfPackages();
-            $order_packages_mapping[$id] = $packages;
-            for ($i = 1; $i <= $packages; $i++) {
-                $shipment_pack[$i] = array(
-                    'serial_number' => $counters['shipment_counter'],
-                    'document_number' => '',
-                    'weight' => round($order->getWeight() / $packages, 2),
-                    'volume' => 0,
-                );
-                foreach ($items as $item) {
-                    $product_volume = $item->getWidth() * $item->getHeight() * $item->getDepth();
-                    $shipment_pack[$i]['volume'] += round((float) $product_volume / $packages);
-                }
-                $counters['shipment_counter']++;
+            $manifest_id = $counters['manifest_counter'];
+            if ($shop_id) {
+                $manifest_id = $shop_id . sprintf('%02d', (int) $manifest_id);
             }
-
-            $shippingAddress = $order->getShippingAddress();
-            $contact_person = $shippingAddress->getFirstname() . ' ' . $shippingAddress->getLastname();
-            $contact_phone = $shippingAddress->getTelephone();
-            $contact_email = $shippingAddress->getEmail();
-
-            $consignee_code = '';
-            if ($shippingAddress->GetVatId()) {
-                $consignee_code = $shippingAddress->GetVatId();
-            }
-
-            if ($order->getData('shipping_method') == 'venipak_COURIER') {
-                $consignee = [
-                    'name' => $contact_person,
-                    'code' => $consignee_code,
-                    'country_code' => $shippingAddress->getCountryId(),
-                    'city' => $shippingAddress->getCity(),
-                    'address' => $shippingAddress->getStreet()[0],
-                    'postcode' => $shippingAddress->getPostcode(),
-                    'person' => $contact_person,
-                    'phone' => $contact_phone,
-                    'email' => $contact_email,
-                    'door_code' => $venipakOrder->getDoorCode(),
-                    'cabinet_number' => $venipakOrder->getCabinetNumber(),
-                    'warehouse_number' => $venipakOrder->getWarehouseNumber(),
-                    'carrier_call' => $venipakOrder->getCallBeforeDelivery(),
-                    'delivery_time' => 'nwd' . $venipakOrder->getDeliveryTime(),
-                    'return_doc' => $venipakOrder->getReturnSignedDocument() ? 1 : 0,
-                    'cod' => $venipakOrder->getIsCod() ? $venipakOrder->getCodAmount() : '',
-                    'cod_type' => $venipakOrder->getIsCod() ? $currency : '',
-                ];
-            }
-            if ($order->getData('shipping_method') == 'venipak_PICKUP_POINT') {
-                $terminal_info = $this->getOrderPickup($order);
-                if (!$terminal_info) {
-                    throw new \Exception(__('Terminal not found for order'));
-                }
-                $consignee = [
-                    'name' => $terminal_info->name,
-                    'code' => $terminal_info->code,
-                    'country_code' => $terminal_info->country,
-                    'city' => $terminal_info->city,
-                    'address' => $terminal_info->address,
-                    'postcode' => $terminal_info->zip,
-                    'person' => $contact_person,
-                    'phone' => $contact_phone,
-                    'email' => $contact_email,
-                    'cod' => $venipakOrder->getIsCod() ? $venipakOrder->getCodAmount() : '',
-                    'cod_type' => $venipakOrder->getIsCod() ? $currency : '',
-                ];
-            }
-            $manifest['shipments'][] = array(
-                'order_id' => $id,
-                'order_code' => $order->getIncrementId(),
-                'consignee' => $consignee,
-                'packs' => $shipment_pack,
+            $manifest = array(
+                'manifest_id' => $manifest_id,
+                'manifest_name' => $this->getConfigData('shop_name'),
+                'shipments' => array(),
             );
-        }
-        $manifest_xml = $this->api->buildManifestXml($manifest);
-        if ($this->isXMLContentValid($manifest_xml)) {
-            $status = $this->api->sendXml($manifest_xml);
-            if (!isset($status['error'])) {
 
-                if (!$venipakManifest) {
-                    $venipakManifest = $this->venipakManifestFactory->create();
-                    $venipakManifest->setManifestNumber($this->api->getManifestNumber($counters['manifest_counter']));
-                    $venipakManifest->save();
-                    $counters['manifest_counter']++;
-                }
-
-                $var->addData(['plain_value' => json_encode($counters)]);
-                $var->save();
-                if (isset($status['text']) && is_array($status['text'])) {
-
-                    $offset = 0;
-                    foreach ($order_packages_mapping as $order_id => $mapping) {
-
-                        $order_labels = array_slice($status['text'], $offset, $mapping);
-                        $this->saveOrderData($order_id, $order_labels, $venipakManifest);
-
-                        $offset += $mapping;
-                    }
-                } elseif (isset($status['text'])) {
-                    $order_id = array_key_first($order_packages_mapping);
-                    $this->saveOrderData($order_id, [$status['text']], $venipakManifest);
-                }
+            $venipakManifest = $this->venipakManifestFactory->create()->getCollection()->addFieldToSelect('*');
+            $venipakManifest->addFieldToFilter('is_closed', array('eq' => 0))
+                    ->addFieldToFilter('warehouse_id', array('eq' => $warehouse_id))
+                    ->addFieldToFilter('created_at', array('like' => date('Y-m-d') . ' %'));
+            if (count($venipakManifest) > 0) {
+                $venipakManifest = $venipakManifest->getFirstItem();
+                $manifest['manifest_id'] = (int) substr($venipakManifest->getManifestNumber(), -3);
             } else {
-                $error_text = '';
-                foreach ($status['error'] as $error) {
-                    $error_text .= $status['error']['text'] . '<br/>';
+                $venipakManifest = false;
+            }
+
+            foreach ($venipakOrders as $venipakOrder) {
+                $id = $venipakOrder->getOrderId();
+                $order = $this->orderFactory->create();
+                $order->load($venipakOrder->getOrderId());
+
+                $shipment_pack = [];
+                $items = $order->getAllVisibleItems();
+                $packages = $venipakOrder->getNumberOfPackages();
+                $order_packages_mapping[$id] = $packages;
+                for ($i = 1; $i <= $packages; $i++) {
+                    $shipment_id = $counters['shipment_counter'];
+                    if ($shop_id) {
+                        $shipment_id = $shop_id . sprintf('%06d', (int) $shipment_id);
+                    }
+                    $shipment_pack[$i] = array(
+                        'serial_number' => $shipment_id,
+                        'document_number' => '',
+                        'weight' => round($order->getWeight() / $packages, 2),
+                        'volume' => 0,
+                    );
+                    foreach ($items as $item) {
+                        $product_volume = $item->getWidth() * $item->getHeight() * $item->getDepth();
+                        $shipment_pack[$i]['volume'] += round((float) $product_volume / $packages);
+                    }
+                    $counters['shipment_counter']++;
                 }
-                throw new \Exception($error_text);
+
+                $shippingAddress = $order->getShippingAddress();
+                $contact_person = $shippingAddress->getFirstname() . ' ' . $shippingAddress->getLastname();
+                $contact_phone = $shippingAddress->getTelephone();
+                $contact_email = $shippingAddress->getEmail();
+
+                $consignee_code = '';
+                if ($shippingAddress->GetVatId()) {
+                    $consignee_code = $shippingAddress->GetVatId();
+                }
+
+                if ($order->getData('shipping_method') == 'venipak_COURIER') {
+                    $consignee = [
+                        'name' => $contact_person,
+                        'code' => $consignee_code,
+                        'country_code' => $shippingAddress->getCountryId(),
+                        'city' => $shippingAddress->getCity(),
+                        'address' => $shippingAddress->getStreet()[0],
+                        'postcode' => $shippingAddress->getPostcode(),
+                        'person' => $contact_person,
+                        'phone' => $contact_phone,
+                        'email' => $contact_email,
+                        'door_code' => $venipakOrder->getDoorCode(),
+                        'cabinet_number' => $venipakOrder->getCabinetNumber(),
+                        'warehouse_number' => $venipakOrder->getWarehouseNumber(),
+                        'carrier_call' => $venipakOrder->getCallBeforeDelivery(),
+                        'delivery_time' => 'nwd' . $venipakOrder->getDeliveryTime(),
+                        'return_doc' => $venipakOrder->getReturnSignedDocument() ? 1 : 0,
+                        'cod' => $venipakOrder->getIsCod() ? $venipakOrder->getCodAmount() : '',
+                        'cod_type' => $venipakOrder->getIsCod() ? $currency : '',
+                    ];
+                }
+                if ($order->getData('shipping_method') == 'venipak_PICKUP_POINT') {
+                    $terminal_info = $this->getOrderPickup($order);
+                    if (!$terminal_info) {
+                        throw new \Exception(__('Terminal not found for order'));
+                    }
+                    $consignee = [
+                        'name' => $terminal_info->name,
+                        'code' => $terminal_info->code,
+                        'country_code' => $terminal_info->country,
+                        'city' => $terminal_info->city,
+                        'address' => $terminal_info->address,
+                        'postcode' => $terminal_info->zip,
+                        'person' => $contact_person,
+                        'phone' => $contact_phone,
+                        'email' => $contact_email,
+                        'cod' => $venipakOrder->getIsCod() ? $venipakOrder->getCodAmount() : '',
+                        'cod_type' => $venipakOrder->getIsCod() ? $currency : '',
+                    ];
+                }
+                $manifest['shipments'][] = array(
+                    'order_id' => $id,
+                    'order_code' => $order->getIncrementId(),
+                    'consignee' => $consignee,
+                    'packs' => $shipment_pack,
+                );
+            }
+            $manifest_xml = $this->api->buildManifestXml($manifest);
+            if ($this->isXMLContentValid($manifest_xml)) {
+                $status = $this->api->sendXml($manifest_xml);
+                if (!isset($status['error'])) {
+
+                    if (!$venipakManifest) {
+                        $venipakManifest = $this->venipakManifestFactory->create();
+                        $venipakManifest->setManifestNumber($this->api->getManifestNumber($manifest_id));
+                        $venipakManifest->setWarehouseId($warehouse_id);
+                        $venipakManifest->save();
+                        $counters['manifest_counter']++;
+                    }
+
+                    $var->addData(['plain_value' => json_encode($counters)]);
+                    $var->save();
+                    $tmp_counter = 1;
+                    if (isset($status['text']) && is_array($status['text'])) {
+
+                        $offset = 0;
+                        foreach ($order_packages_mapping as $order_id => $mapping) {
+
+                            $order_labels = array_slice($status['text'], $offset, $mapping);
+                            $this->saveOrderData($order_id, $order_labels, $venipakManifest, ($magento_action && $tmp_counter == 1));
+
+                            $offset += $mapping;
+                            $tmp_counter++;
+                        }
+                    } elseif (isset($status['text'])) {
+                        $order_id = array_key_first($order_packages_mapping);
+                        $this->saveOrderData($order_id, [$status['text']], $venipakManifest, ($magento_action && $tmp_counter == 1));
+                    }
+                } else {
+                    $error_text = '';
+                    foreach ($status['error'] as $error) {
+                        $error_text .= $status['error']['text'] . '<br/>';
+                    }
+                    throw new \Exception($error_text);
+                }
             }
         }
 
@@ -586,7 +620,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
         }
     }
 
-    private function saveOrderData($order_id, $labels, $manifest) {
+    private function saveOrderData($order_id, $labels, $manifest, $magento_action = false) {
         $venipakOrder = $this->venipakOrderFactory->create();
         $venipakOrder->load($order_id, 'order_id');
         $venipakOrder->setLabelNumber(json_encode($labels));
@@ -598,7 +632,16 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
         $order->load($order_id);
         $order->addStatusHistoryComment('Ready for Venipak', false);
         $order->save();
-        $this->setOrderShipment($order, $labels);
+        //if shipping by magento, do not create shipment
+        if ($magento_action) {
+            $this->venipakTracking = $labels[0];
+            $pdf = $this->printLabels([$labels[0]]);
+            if ($pdf) {
+                $this->venipakLabel = $pdf;
+            }
+        } else {
+            $this->setOrderShipment($order, $labels);
+        }
     }
 
     private function setOrderShipment($order, $labels) {
@@ -635,9 +678,10 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
                 $shipment->addTrack($track);
                 $shipment->save();
             } catch (\Exception $e) {
-                throw new \Magento\Framework\Exception\LocalizedException(
-                        __($e->getMessage())
-                );
+                /*
+                  throw new \Magento\Framework\Exception\LocalizedException(
+                  __($e->getMessage())
+                  ); */
             }
         }
     }
@@ -665,7 +709,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
         return $trackingData;
     }
 
-    private function getOrderPickup($order) {
+    public function getOrderPickup($order) {
         $shippingAddress = $order->getShippingAddress();
         $pickups = $this->api->getTerminals($shippingAddress->getCountryId());
         $pickup_id = false;
@@ -682,8 +726,8 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
         }
         return false;
     }
-    
-    public function getTerminals($country){
+
+    public function getTerminals($country) {
         return $this->api->getTerminals($country);
     }
 
@@ -704,7 +748,18 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
     }
 
     protected function _doShipmentRequest(\Magento\Framework\DataObject $request) {
-        
+        $result = new \Magento\Framework\DataObject();
+        try {
+            $order = $request->getOrderShipment()->getOrder();
+            $this->doShipment([$order->getId()], true);
+        } catch (\Exception $ex) {
+            $result->setErrors($ex->getMessage());
+        }
+        if ($this->venipakLabel && $this->venipakTracking) {
+            $result->setTrackingNumber($this->venipakTracking);
+            $result->setShippingLabelContent($this->venipakLabel);
+        }
+        return $result;
     }
 
     /**
