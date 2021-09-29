@@ -190,6 +190,42 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
         if ($this->getConfigFlag('test_mode')) {
             $this->api->setTestMode();
         }
+        $this->api->setVersion("1.0.0");
+
+        //check terminals list
+        $var = $this->variableFactory->create();
+        $var->loadByCode('VENIPAK_REFRESH');
+        if (!$var->getId() || $var->getPlainValue() < time() - 3600 * 24) {
+            $this->refreshPickUpPoints();
+            if (!$var->getId()){
+                $var->setData(['code' => 'VENIPAK_REFRESH',
+                    'plain_value' => time()
+                ]);
+            } else {
+                $var->addData(['plain_value' => time()]);
+            }
+            $var->save();
+        }
+    }
+
+    private function refreshPickUpPoints() {
+        $countries = ['LT', 'LV', 'EE', 'PL'];
+        foreach ($countries as $country) {
+            $parcel_terminals = $this->api->getTerminals($country);
+            if ($parcel_terminals) {
+                $var = $this->variableFactory->create();
+                $var->loadByCode('VENIPAK_PICKUPS_' . $country);
+                if (!$var->getId()){
+                    $var->setData(['code' => 'VENIPAK_PICKUPS_' . $country,
+                        'plain_value' => json_encode($parcel_terminals)
+                    ]);
+                } else {
+                    $var->addData(['plain_value' => json_encode($parcel_terminals)
+                    ]);
+                }
+                $var->save();
+            }
+        }
     }
 
     /**
@@ -728,6 +764,11 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
     }
 
     public function getTerminals($country) {
+        $var = $this->variableFactory->create();
+        $var->loadByCode('VENIPAK_PICKUPS_' . strtoupper($country));
+        if ($var->getId() && is_array(json_decode($var->getPlainValue()))){
+            return json_decode($var->getPlainValue());
+        }
         return $this->api->getTerminals($country);
     }
 

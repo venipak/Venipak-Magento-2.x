@@ -20,6 +20,10 @@ class MjvpApi {
         $this->size = 'a4';
     }
     
+    public function setVersion($version){
+        $this->cVenipak->setVersion($version);
+    }
+    
     public function setTestMode() {
         $this->cVenipak = new MjvpVenipak(true);
     }

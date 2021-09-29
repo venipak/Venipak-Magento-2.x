@@ -7,6 +7,7 @@ class MjvpVenipak
     private $_liveCurlUrl = 'https://go.venipak.lt/';
     private $_testCurlUrl = 'https://venipak.uat.megodata.com/'; //DEMO
     private $_curlUrl;
+    private $_moduleVersion = "0.0.0";
 
     /**
      * Class constructor
@@ -18,6 +19,10 @@ class MjvpVenipak
         } else {
             $this->_curlUrl = $this->_liveCurlUrl;
         }
+    }
+    
+    public function setVersion($version){
+        $this->_moduleVersion = $version;
     }
 
     public function getTrackingShipment($tracking_code, $tracking_type = 'track_single', $format = 'csv')
@@ -244,6 +249,7 @@ class MjvpVenipak
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => $request_type,
             CURLOPT_POSTFIELDS => $params,
+            CURLOPT_HTTPHEADER => [ 'Reference: Magento 2 v' . $this->_moduleVersion]
         );
 
         curl_setopt_array($curl, $curl_options);
