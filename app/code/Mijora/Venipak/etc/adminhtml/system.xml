@@ -26,7 +26,7 @@
                 <field id="password" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Password</label>
                 </field>
-                <field id="test_mode" translate="label" type="select" sortOrder="91" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                <field id="test_mode" translate="label" type="select" sortOrder="71" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
                     <label>Test mode</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
@@ -63,7 +63,7 @@
                 <field id="shop_phone" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="0" >
                     <label>Shop phone</label>
                 </field>
-                <field id="shop_email" translate="label" type="text" sortOrder="93" showInDefault="1" showInWebsite="1" showInStore="0" >
+                <field id="shop_email" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="0" >
                     <label>Shop email</label>
                 </field>
                 <field id="label_size" translate="label" type="select" sortOrder="130" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
