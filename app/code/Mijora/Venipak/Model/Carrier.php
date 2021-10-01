@@ -190,7 +190,10 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
         if ($this->getConfigFlag('test_mode')) {
             $this->api->setTestMode();
         }
-        $this->api->setVersion("1.0.0");
+        $this->api->setVersion("1.0.1");
+        if ($this->getConfigFlag('sender_address')){
+            $this->api->setConsignor($this->buildConsignorXml());
+        }
 
         //check terminals list
         $var = $this->variableFactory->create();
@@ -226,6 +229,24 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
                 $var->save();
             }
         }
+    }
+    
+    /**
+     * Build consignor XML structure
+     */
+    private function buildConsignorXml() {
+        $xml_code = '<consignor>';
+        $xml_code .= '<name>' . $this->getConfigData('sender_name') . '</name>';
+        $xml_code .= '<company_code>' . $this->getConfigData('company_code') . '</company_code>';
+        $xml_code .= '<country>' . $this->getConfigData('shop_country_code') . '</country>';
+        $xml_code .= '<city>' . $this->getConfigData('shop_city') . '</city>';
+        $xml_code .= '<address>' . $this->getConfigData('shop_address') . '</address>';
+        $xml_code .= '<post_code>' . $this->getConfigData('shop_postcode') . '</post_code>';
+        $xml_code .= '<contact_person>' . $this->getConfigData('shop_name') . '</contact_person>';
+        $xml_code .= '<contact_tel>' . $this->getConfigData('shop_phone') . '</contact_tel>';
+        $xml_code .= '<contact_email>' . $this->getConfigData('shop_email') . '</contact_email>';
+        $xml_code .= '</consignor>';
+        return $xml_code;
     }
 
     /**
@@ -740,7 +761,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
         return $pdf;
     }
 
-    public function getVenipakTracking($labels, $type = 'track_all') {
+    public function getVenipakTracking($labels, $type = 'track_single') {
         $trackingData = $this->api->getTracking($labels, $type);
         return $trackingData;
     }

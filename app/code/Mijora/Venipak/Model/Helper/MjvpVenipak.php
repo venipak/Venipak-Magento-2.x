@@ -44,7 +44,6 @@ class MjvpVenipak
                 'output' => $format,
             ),
         );
-        
         return $this->executeRequest('ws/tracking', 'GET', $params);
     }
 
@@ -238,7 +237,6 @@ class MjvpVenipak
         }
 
         $curl = curl_init();
-        
         $curl_options = array(
             CURLOPT_URL => $this->_curlUrl . $url_suffix . $url_query,
             CURLOPT_RETURNTRANSFER => true,

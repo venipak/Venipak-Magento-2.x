@@ -1151,14 +1151,14 @@ var Map = /*#__PURE__*/function () {
       });
       var Icon = L.Icon.extend({
         options: {
-          iconSize: [80, 144]
+          iconSize: [35, 35]
         }
       });
       _this._icons['venipak-pickup'] = new Icon({
-            iconUrl: mjvp_imgs_url + "/venipak-main.svg"
+            iconUrl: mjvp_imgs_url + "/map-pin.png"
       });
       _this._icons['venipak-locker'] = new Icon({
-        iconUrl: mjvp_imgs_url + "/venipak-alt.svg"
+        iconUrl: mjvp_imgs_url + "/map-pin.png"
       });
 
       if (_this._markerLayer.getLayers().length > 0) {

@@ -1,6 +1,9 @@
 <?xml version="1.0"?>
     <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="admin-2columns-left" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">  
-    <body> 
+        <head>
+            <css src="Mijora_Venipak::css/venipak.css"/>
+        </head>
+        <body> 
         <referenceContainer name="js">
                 <block class="Magento\Backend\Block\Template" template="Mijora_Venipak::order/view/js.phtml" name="mijora_venipak_order_view_js"/>
         </referenceContainer>   

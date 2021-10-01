@@ -37,8 +37,19 @@ class Grid extends Extended {
         $this->setSaveParametersInSession(true);
     }
 
+    public function getMainButtonsHtml() {
+        $html = parent::getMainButtonsHtml(); //get the parent class buttons
+        $addButton = $this->getLayout()->createBlock('Magento\Backend\Block\Widget\Button')
+                        ->setData(array(
+                            'label' => __('Refresh delivery status'),
+                            'onclick' => "setLocation('".$this->getUrl('mijora_venipak/order/refreshdeliverystatus')."')",
+                            'class' => 'action-primary'
+                        ))->toHtml();
+        return  $html .$addButton;
+    }
+
     protected function _prepareMassaction() {
-        
+
         $this->setMassactionIdField('id');
         $this->getMassactionBlock()->setFormFieldName('id');
 
@@ -123,6 +134,15 @@ class Grid extends Extended {
                     'header' => __('Created At'),
                     'index' => 'created_at',
                     'type' => 'datetime',
+                ]
+        );
+        $this->addColumn(
+                'delivery_status',
+                [
+                    'header' => __('Delivery status'),
+                    'index' => 'delivery_status',
+                    'type' => 'text',
+                    'renderer' => 'Mijora\Venipak\Block\Adminhtml\Grid\Renderer\DeliveryStatus',
                 ]
         );
         $this->addColumn(

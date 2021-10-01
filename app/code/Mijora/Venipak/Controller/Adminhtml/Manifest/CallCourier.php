@@ -105,7 +105,7 @@ class CallCourier extends \Magento\Backend\App\Action {
         $sender['postcode'] = $warehouse->getPostcode();
         $sender['contact_person'] = $warehouse->getContactName();
         $sender['contact_phone'] = $warehouse->getPhone();
-        $sender['contact_email'] = $this->carrier->getConfigData('company_email');
+        $sender['contact_email'] = $this->carrier->getConfigData('shop_email');
         $invitation_data['sender'] = $sender;
 
         // Get manifest weight

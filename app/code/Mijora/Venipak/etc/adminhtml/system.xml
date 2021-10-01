@@ -35,11 +35,36 @@
                     <validate>validate-number validate-zero-or-greater</validate>
                     <comment>Shop id is used in manifest number generation, if you have more then 1 shop with same API ID, change this number, to be different in all shops. Max value 9</comment>
                 </field>
+                <field id="sender_address" translate="label" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                    <label>Use as sender's address</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="sender_name" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="0" >
+                    <label>Sender name</label>
+                </field>
+                <field id="company_code" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="0" >
+                    <label>Company code</label>
+                </field>
+                <field id="shop_country_code" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="0" >
+                    <label>Shop country code</label>
+                </field>
+                <field id="shop_city" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="0" >
+                    <label>Shop city</label>
+                </field>
+                <field id="shop_address" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="0" >
+                    <label>Shop address</label>
+                </field>
+                <field id="shop_postcode" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="0" >
+                    <label>Shop postcode</label>
+                </field>
                 <field id="shop_name" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="0" >
                     <label>Shop name</label>
                 </field>
-                <field id="company_email" translate="label" type="text" sortOrder="93" showInDefault="1" showInWebsite="1" showInStore="0" >
-                    <label>Company email</label>
+                <field id="shop_phone" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="0" >
+                    <label>Shop phone</label>
+                </field>
+                <field id="shop_email" translate="label" type="text" sortOrder="93" showInDefault="1" showInWebsite="1" showInStore="0" >
+                    <label>Shop email</label>
                 </field>
                 <field id="label_size" translate="label" type="select" sortOrder="130" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
                     <label>Label size</label>
@@ -71,6 +96,7 @@
                 
                 <field id="courier_price" translate="label" type="text" sortOrder="182" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Courier shipping price</label>
+                    <validate>validate-venipak-price</validate>
                     <depends>
                         <field id="price_by_country">0</field>
                     </depends>
@@ -78,6 +104,7 @@
                 
                 <field id="pickup_point_price" translate="label" type="text" sortOrder="183" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Pickup point shipping price</label>
+                    <validate>validate-venipak-price</validate>
                     <depends>
                         <field id="price_by_country">0</field>
                     </depends>
@@ -85,6 +112,7 @@
                 
                 <field id="lt_courier_price" translate="label" type="text" sortOrder="184" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>LT Courier shipping price</label>
+                    <validate>validate-venipak-price</validate>
                     <depends>
                         <field id="price_by_country">1</field>
                     </depends>
@@ -92,6 +120,7 @@
                 
                 <field id="lt_pickup_point_price" translate="label" type="text" sortOrder="185" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>LT Pickup point shipping price</label>
+                    <validate>validate-venipak-price</validate>
                     <depends>
                         <field id="price_by_country">1</field>
                     </depends>
@@ -99,6 +128,7 @@
                 
                 <field id="lv_courier_price" translate="label" type="text" sortOrder="186" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>LV Courier shipping price</label>
+                    <validate>validate-venipak-price</validate>
                     <depends>
                         <field id="price_by_country">1</field>
                     </depends>
@@ -106,6 +136,7 @@
                 
                 <field id="lv_pickup_point_price" translate="label" type="text" sortOrder="187" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>LV Pickup point shipping price</label>
+                    <validate>validate-venipak-price</validate>
                     <depends>
                         <field id="price_by_country">1</field>
                     </depends>
@@ -113,6 +144,7 @@
                 
                 <field id="ee_courier_price" translate="label" type="text" sortOrder="188" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>EE Courier shipping price</label>
+                    <validate>validate-venipak-price</validate>
                     <depends>
                         <field id="price_by_country">1</field>
                     </depends>
@@ -120,6 +152,7 @@
                 
                 <field id="ee_pickup_point_price" translate="label" type="text" sortOrder="189" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>EE Pickup point shipping price</label>
+                    <validate>validate-venipak-price</validate>
                     <depends>
                         <field id="price_by_country">1</field>
                     </depends>
@@ -127,6 +160,7 @@
                 
                 <field id="pl_courier_price" translate="label" type="text" sortOrder="190" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>PL Courier shipping price</label>
+                    <validate>validate-venipak-price</validate>
                     <depends>
                         <field id="price_by_country">1</field>
                     </depends>
@@ -134,6 +168,7 @@
                 
                 <field id="pl_pickup_point_price" translate="label" type="text" sortOrder="191" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>PL Pickup point shipping price</label>
+                    <validate>validate-venipak-price</validate>
                     <depends>
                         <field id="price_by_country">1</field>
                     </depends>

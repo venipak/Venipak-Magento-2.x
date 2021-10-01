@@ -354,6 +354,13 @@ class InstallSchema implements InstallSchemaInterface {
                             null,
                             ['nullable' => false, 'default' => \Magento\Framework\DB\Ddl\Table::TIMESTAMP_INIT_UPDATE],
                             'Updated At')
+                    ->addColumn(
+                            'delivery_status',
+                            \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                            255,
+                            [],
+                            'Delivery status'
+                    )
                     ->setComment('Venipak manifests');
             $installer->getConnection()->createTable($table);
 

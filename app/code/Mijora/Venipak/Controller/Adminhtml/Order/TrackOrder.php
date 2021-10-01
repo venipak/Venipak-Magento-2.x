@@ -14,6 +14,8 @@ class TrackOrder extends \Magento\Backend\App\Action {
     protected $venipakOrderFactory;
     protected $carrier;
     protected $json;
+    
+    private $lastStatus = null;
 
     public function __construct(
             \Magento\Backend\App\Action\Context $context,
@@ -64,10 +66,13 @@ class TrackOrder extends \Magento\Backend\App\Action {
 
         foreach ($labels as $label) {
             $data = $this->carrier->getVenipakTracking($label);
-            
             $html .= $this->buildStartTable($model, $label);
             $html .= $this->buildRows($data);
             $html .= $this->buildEndTable($model, $label);
+        }
+        if ($this->lastStatus){
+            $model->setDeliveryStatus($this->lastStatus);
+            $model->save();
         }
         return $resultJson->setData([
                     'html' => $html
@@ -101,19 +106,23 @@ class TrackOrder extends \Magento\Backend\App\Action {
 
     private function buildRows($data) {
         $return = '';
-        $rows = explode('\n', $data);
+        $rows = explode("\n", $data);
         foreach ($rows as $key => $row) {
             if ($key == 0) {
                 continue;
             }
             $row = str_getcsv($row);
+            if (count($row) != 5){
+                continue;
+            }
             $return .= '<tr>
-                                    <th>' . $row[0] . '</th>
-                                    <th>' . $row[1] . '</th>
-                                    <th>' . $row[2] . '</th>
-                                    <th>' . $row[3] . '</th>
-                                    <th>' . $row[4] . '</th>
+                                    <td>' . $row[0] . '</td>
+                                    <td>' . $row[1] . '</td>
+                                    <td>' . $row[2] . '</td>
+                                    <td>' . $row[3] . '</td>
+                                    <td>' . $row[4] . '</td>
                                 </tr>';
+            $this->lastStatus = $row[3];
         }
         return $return;
     }

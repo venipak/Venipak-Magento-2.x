@@ -11,6 +11,7 @@ class MjvpApi {
     private $username;
     private $password;
     private $size;
+    private $consignor = null;
 
     /**
      * Class constructor
@@ -19,11 +20,15 @@ class MjvpApi {
         $this->cVenipak = new MjvpVenipak();
         $this->size = 'a4';
     }
-    
-    public function setVersion($version){
+
+    public function setVersion($version) {
         $this->cVenipak->setVersion($version);
     }
     
+    public function setConsignor($consignor) {
+        $this->consignor = $consignor;
+    }
+
     public function setTestMode() {
         $this->cVenipak = new MjvpVenipak(true);
     }
@@ -39,12 +44,12 @@ class MjvpApi {
     public function setPassword($pass) {
         $this->password = $pass;
     }
-    
+
     public function setSize($size) {
         $this->size = $size;
     }
-    
-    public function getTracking($tracking_code, $tracking_type = 'track_single', $format = 'csv'){
+
+    public function getTracking($tracking_code, $tracking_type = 'track_single', $format = 'csv') {
         return $this->cVenipak->getTrackingShipment($tracking_code, $tracking_type, $format);
     }
 
@@ -207,6 +212,9 @@ class MjvpApi {
         $params['packs'] = (isset($params['packs'])) ? $params['packs'] : array();
 
         $xml_code = '<shipment>';
+        if ($this->consignor) {
+            $xml_code .= $this->consignor;
+        }
         $xml_code .= '<consignee>';
         $xml_code .= '<name>' . $params['consignee']['name'] . '</name>';
         if (!empty($params['consignee']['code'])) {
@@ -257,6 +265,7 @@ class MjvpApi {
 
         return $xml_code;
     }
+
 
     /**
      * Send XML to API
@@ -323,12 +332,12 @@ class MjvpApi {
         ];
 
         $pdf = $this->cVenipak->printLabel($username, $password, $params);
-        if (!$pdf){
+        if (!$pdf) {
             throw new \Exception("Downloaded label data is empty.");
         }
         return $pdf;
     }
-    
+
     public function getManifestPdf($number) {
         $username = $this->username;
         $password = $this->password;
@@ -336,7 +345,7 @@ class MjvpApi {
         $params = $number;
 
         $pdf = $this->cVenipak->printList($username, $password, $params);
-        if (!$pdf){
+        if (!$pdf) {
             throw new \Exception("Downloaded label data is empty.");
         }
         return $pdf;
