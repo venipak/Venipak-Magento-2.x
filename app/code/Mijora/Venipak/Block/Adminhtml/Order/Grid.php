@@ -14,6 +14,7 @@ class Grid extends Extended {
     protected $registry;
     protected $_objectManager = null;
     protected $orderFactory;
+    private $carrier;
 
     public function __construct(
             Context $context,
@@ -21,11 +22,13 @@ class Grid extends Extended {
             Registry $registry,
             ObjectManagerInterface $objectManager,
             \Mijora\Venipak\Model\OrderFactory $orderFactory,
+            \Mijora\Venipak\Model\Carrier $carrier,
             array $data = []
     ) {
         $this->_objectManager = $objectManager;
         $this->registry = $registry;
         $this->orderFactory = $orderFactory;
+        $this->carrier = $carrier;
         parent::__construct($context, $backendHelper, $data);
     }
 
@@ -134,6 +137,16 @@ class Grid extends Extended {
                     'header' => __('Created At'),
                     'index' => 'created_at',
                     'type' => 'datetime',
+                ]
+        );
+        $this->addColumn(
+                'return_service',
+                [
+                    'header' => __('Return service'),
+                    'index' => 'return_service',
+                    'value' => $this->carrier->getConfig('enable_return'),
+                    'type' => 'text',
+                    'renderer' => 'Mijora\Venipak\Block\Adminhtml\Grid\Renderer\ReturnService',
                 ]
         );
         $this->addColumn(

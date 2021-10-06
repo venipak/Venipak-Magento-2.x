@@ -12,6 +12,8 @@ class MjvpApi {
     private $password;
     private $size;
     private $consignor = null;
+    private $returnConsignee = null;
+    private $returnService = false;
 
     /**
      * Class constructor
@@ -27,6 +29,14 @@ class MjvpApi {
     
     public function setConsignor($consignor) {
         $this->consignor = $consignor;
+    }
+    
+    public function setReturnConsignee($consignor) {
+        $this->returnConsignee = $consignor;
+    }
+    
+    public function setReturnService($days) {
+        $this->returnService = $days;
     }
 
     public function setTestMode() {
@@ -215,6 +225,9 @@ class MjvpApi {
         if ($this->consignor) {
             $xml_code .= $this->consignor;
         }
+        if ($this->returnConsignee) {
+            $xml_code .= $this->returnConsignee;
+        }
         $xml_code .= '<consignee>';
         $xml_code .= '<name>' . $params['consignee']['name'] . '</name>';
         if (!empty($params['consignee']['code'])) {
@@ -249,6 +262,9 @@ class MjvpApi {
             $xml_code .= '<cod>' . $params['consignee']['cod'] . '</cod>';
         if ($params['consignee']['cod_type'])
             $xml_code .= '<cod_type>' . $params['consignee']['cod_type'] . '</cod_type>';
+        if ($this->returnService){
+            $xml_code .= '<return_service>' . $this->returnService . '</return_service>';
+        }
         $xml_code .= '</attribute>';
 
         foreach ($params['packs'] as $pack) {

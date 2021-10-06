@@ -35,36 +35,46 @@
                     <validate>validate-number validate-zero-or-greater</validate>
                     <comment>Shop id is used in manifest number generation, if you have more then 1 shop with same API ID, change this number, to be different in all shops. Max value 9</comment>
                 </field>
-                <field id="sender_address" translate="label" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                <field id="sender_address" translate="label" type="select" sortOrder="91" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
                     <label>Use as sender's address</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="sender_name" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="0" >
+                <field id="sender_name" translate="label" type="text" sortOrder="92" showInDefault="1" showInWebsite="1" showInStore="0" >
                     <label>Sender name</label>
                 </field>
-                <field id="company_code" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="0" >
+                <field id="company_code" translate="label" type="text" sortOrder="93" showInDefault="1" showInWebsite="1" showInStore="0" >
                     <label>Company code</label>
                 </field>
-                <field id="shop_country_code" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="0" >
+                <field id="shop_country_code" translate="label" type="text" sortOrder="94" showInDefault="1" showInWebsite="1" showInStore="0" >
                     <label>Shop country code</label>
                 </field>
-                <field id="shop_city" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="0" >
+                <field id="shop_city" translate="label" type="text" sortOrder="95" showInDefault="1" showInWebsite="1" showInStore="0" >
                     <label>Shop city</label>
                 </field>
-                <field id="shop_address" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="0" >
+                <field id="shop_address" translate="label" type="text" sortOrder="96" showInDefault="1" showInWebsite="1" showInStore="0" >
                     <label>Shop address</label>
                 </field>
-                <field id="shop_postcode" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="0" >
+                <field id="shop_postcode" translate="label" type="text" sortOrder="97" showInDefault="1" showInWebsite="1" showInStore="0" >
                     <label>Shop postcode</label>
                 </field>
-                <field id="shop_name" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="0" >
+                <field id="shop_name" translate="label" type="text" sortOrder="98" showInDefault="1" showInWebsite="1" showInStore="0" >
                     <label>Shop name</label>
                 </field>
-                <field id="shop_phone" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="0" >
+                <field id="shop_phone" translate="label" type="text" sortOrder="99" showInDefault="1" showInWebsite="1" showInStore="0" >
                     <label>Shop phone</label>
                 </field>
-                <field id="shop_email" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="0" >
+                <field id="shop_email" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="0" >
                     <label>Shop email</label>
+                </field>
+                <field id="enable_return" translate="label" type="select" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Enable return service</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="return_days" translate="label" type="text" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                    <label>Days after purchase to allow return</label>
+                    <depends>
+                        <field id="enable_return">1</field>
+                    </depends>
                 </field>
                 <field id="label_size" translate="label" type="select" sortOrder="130" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
                     <label>Label size</label>

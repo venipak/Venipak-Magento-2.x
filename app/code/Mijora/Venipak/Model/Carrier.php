@@ -194,6 +194,11 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
         if ($this->getConfigFlag('sender_address')){
             $this->api->setConsignor($this->buildConsignorXml());
         }
+        
+        if ($this->getConfigFlag('enable_return') && $this->getConfigData('return_days') ){
+            $this->api->setReturnConsignee($this->buildReturnConsigneeXml());
+            $this->api->setReturnService($this->getConfigData('return_days'));
+        }
 
         //check terminals list
         $var = $this->variableFactory->create();
@@ -209,6 +214,10 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
             }
             $var->save();
         }
+    }
+    
+    public function getConfig($name){
+        return $this->getConfigData($name);
     }
 
     private function refreshPickUpPoints() {
@@ -246,6 +255,24 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
         $xml_code .= '<contact_tel>' . $this->getConfigData('shop_phone') . '</contact_tel>';
         $xml_code .= '<contact_email>' . $this->getConfigData('shop_email') . '</contact_email>';
         $xml_code .= '</consignor>';
+        return $xml_code;
+    }
+    
+    /**
+     * Build consignor XML structure
+     */
+    private function buildReturnConsigneeXml() {
+        $xml_code = '<return_consignee>';
+        $xml_code .= '<name>' . $this->getConfigData('sender_name') . '</name>';
+        $xml_code .= '<company_code>' . $this->getConfigData('company_code') . '</company_code>';
+        $xml_code .= '<country>' . $this->getConfigData('shop_country_code') . '</country>';
+        $xml_code .= '<city>' . $this->getConfigData('shop_city') . '</city>';
+        $xml_code .= '<address>' . $this->getConfigData('shop_address') . '</address>';
+        $xml_code .= '<post_code>' . $this->getConfigData('shop_postcode') . '</post_code>';
+        $xml_code .= '<contact_person>' . $this->getConfigData('shop_name') . '</contact_person>';
+        $xml_code .= '<contact_tel>' . $this->getConfigData('shop_phone') . '</contact_tel>';
+        $xml_code .= '<contact_email>' . $this->getConfigData('shop_email') . '</contact_email>';
+        $xml_code .= '</return_consignee>';
         return $xml_code;
     }
 
