@@ -14,6 +14,7 @@
         <policy id="img-src">
             <values>
                 <value id="terminalmappingjs-domain" type="host">https://www.terminalmappingjs.com</value>
+                <value id="venipak-domain" type="host">https://osm.venipak.com</value>
                 <value id="venipak" type="host">http://mano.venipak.lt</value>
             </values>
         </policy>
