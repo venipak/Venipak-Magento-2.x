@@ -30,6 +30,20 @@
                     <label>Test mode</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
+                <field id="api_test_url" translate="label" type="text" sortOrder="72" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>API TEST URL</label>
+                    <depends>
+                        <field id="test_mode">1</field>
+                    </depends>
+                    <comment>Do not change</comment>
+                </field>
+                <field id="api_prod_url" translate="label" type="text" sortOrder="72" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>API PROD URL</label>
+                    <depends>
+                        <field id="test_mode">0</field>
+                    </depends>
+                    <comment>Do not change</comment>
+                </field>
                 <field id="shop_id" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="0" >
                     <label>Shop id</label>
                     <validate>validate-number validate-zero-or-greater</validate>

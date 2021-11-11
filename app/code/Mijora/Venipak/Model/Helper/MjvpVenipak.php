@@ -7,14 +7,40 @@ class MjvpVenipak
     private $_liveCurlUrl = 'https://go.venipak.lt/';
     private $_testCurlUrl = 'https://venipak.uat.megodata.com/'; //DEMO
     private $_curlUrl;
+    private $_test = false;
     private $_moduleVersion = "0.0.0";
 
     /**
      * Class constructor
      */
-    public function __construct($test = false)
+    public function __construct($test = false, $prod_url = false, $test_url = false)
     {
-        if ($test){
+        if ($prod_url){
+            $this->_liveCurlUrl = $prod_url;
+        }
+        
+        if ($test_url){
+            $this->_testCurlUrl = $test_url;
+        }
+        
+        $this->_test = $test;
+        if ($this->_test){
+            $this->_curlUrl = $this->_testCurlUrl;
+        } else {
+            $this->_curlUrl = $this->_liveCurlUrl;
+        }
+    }
+    
+    public function setURLs($prod_url = false, $test_url = false){
+        if ($prod_url){
+            $this->_liveCurlUrl = $prod_url;
+        }
+        
+        if ($test_url){
+            $this->_testCurlUrl = $test_url;
+        }
+        
+        if ($this->_test){
             $this->_curlUrl = $this->_testCurlUrl;
         } else {
             $this->_curlUrl = $this->_liveCurlUrl;

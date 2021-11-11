@@ -42,6 +42,9 @@ class MjvpApi {
     public function setTestMode() {
         $this->cVenipak = new MjvpVenipak(true);
     }
+    public function setURLs($prod_url = false, $test_url = false){
+        $this->cVenipak->setURLs($prod_url, $test_url);
+    }
 
     public function setApiId($apiId) {
         $this->apiId = $apiId;

@@ -25,6 +25,8 @@
                 <active_rma>0</active_rma>
                 <is_online>1</is_online>
                 <return_days>14</return_days>
+                <api_test_url>https://venipak.uat.megodata.com/</api_test_url>
+                <api_prod_url>https://go.venipak.lt/</api_prod_url>
             </venipak>
         </carriers>
     </default>

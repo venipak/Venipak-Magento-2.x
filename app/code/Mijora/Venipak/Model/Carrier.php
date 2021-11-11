@@ -190,7 +190,9 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
         if ($this->getConfigFlag('test_mode')) {
             $this->api->setTestMode();
         }
-        $this->api->setVersion("1.0.1");
+        $this->api->setURLs($this->getConfigData('api_prod_url'), $this->getConfigData('api_test_url'));
+        
+        $this->api->setVersion("1.0.2");
         if ($this->getConfigFlag('sender_address')){
             $this->api->setConsignor($this->buildConsignorXml());
         }
