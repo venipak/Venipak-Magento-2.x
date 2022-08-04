@@ -39,6 +39,11 @@ define([
                 this.hideCourier(selectedMethod);
                 this.hidePickup(selectedMethod);
             }
+            if (selectedMethod == 'venipak_PICKUP_POINT' && !venipakData.getPickupPoint()) {
+                $('#shipping-method-buttons-container .button.continue').prop('disabled', true);
+            } else {
+                $('#shipping-method-buttons-container .button.continue').prop('disabled', false);
+            }
         },
         hideCourier: function (selectedMethod) {
             if ($('#s_method_venipak_COURIER').length > 0 && $('#checkout-step-shipping_method .venipak_courrier_data').length === 0) {
@@ -146,6 +151,7 @@ define([
             
             $('#checkout-step-shipping_method').on('change', '#mjvp-selected-terminal', function () {
                 venipakData.setPickupPoint($(this).val());
+                $('#shipping-method-buttons-container .button.continue').prop('disabled', false);
             });
             $('#checkout-step-shipping_method').on('focusout', '#venipak-courier-door-code', function () {
                 venipakData.setDoorCode($(this).val());
