@@ -240,10 +240,14 @@ var TerminalMappingMjvp = /*#__PURE__*/function () {
           console.info(_this2.prefix + 'Terminals loaded');
 
           _this2.dom.removeOverlay();
-
           _this2.publish('tmjs-ready', _this2);
         // });
       });
+    }
+  }, {
+    key: "selectTerminal",
+    value: function selectTerminal() {
+      this.publish('tmjs-ready', this);
     }
   }, {
     key: "setImagesPath",
@@ -833,7 +837,7 @@ var DOMManipulator = /*#__PURE__*/function () {
       }
 
       if (event.target.classList.contains('tmjs-select-btn')) {
-        console.log('Trying to select terminal:', data.dataset.id);
+        //console.log('Trying to select terminal:', data.dataset.id);
         this.TMJS.publish('terminal-selected', this.TMJS.map.getActiveLocation()); // seting scrollIntoView as false since we already see it.
         //this.setActiveTerminal(target.dataset.id, false);
 
@@ -908,7 +912,7 @@ var DOMManipulator = /*#__PURE__*/function () {
       var scrollIntoView = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
 
       if (this.TMJS.map.isActive(id)) {
-        console.log('Allready active');
+        //console.log('Allready active');
 
         if (scrollIntoView) {
           var _location = this.TMJS.map.getActiveLocation();

@@ -48,6 +48,7 @@ var venipak_custom_modal = function () {
             tmjs.publish('close-map-modal');
             document.querySelector('.tmjs-selected-terminal').innerHTML = '<span class="mjvp-tmjs-terminal-name">' + data.name + '</span> <span class="mjvp-tmjs-terminal-address">(' + data.address + ')</span> <span class="mjvp-tmjs-terminal-comment">' + data.city + '.</span>';
         });
+        tmjs.selectTerminal();
     } else {
         console.log('Venipak container not found');
     }
