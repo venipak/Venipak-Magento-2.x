@@ -182,7 +182,7 @@
 }
 
 #filter-container {
-  
+  position: relative;
 }
 #filter-container > div {
   height: 40px;
@@ -221,9 +221,10 @@
     color: #FFFFFF;
     position: absolute;
     font-size: 10px;
-    left: -18px;
+    left: auto;
     bottom: 0px;
     cursor: pointer;
+    top: 4px;
 }
 
 .mjvp-pickup-filter.reset {

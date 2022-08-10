@@ -522,3 +522,45 @@ div.tmjs-loading {
   }
 }
 /**  tmjs-loading dots loader end **/
+
+@media only screen and (max-width: 500px)  {
+  .tmjs-modal h3 {
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .tmjs-modal .tmjs-terminal-finder h2 {
+    font-size: 17px;
+    font-weight: 600;
+  }
+  .tmjs-modal .tmjs-terminal-finder .tmjs-close-modal-btn {
+    top: 15px;
+    right: 5px;
+  }
+  .tmjs-modal .tmjs-terminal-list > li:not(.tmjs-city) {
+    padding: 5px 13px;
+  }
+  .tmjs-terminal-list {
+    overflow: hidden;
+    overflow-y: auto;
+  }
+  .tmjs-modal .mjvp-pickup-filter.reset span {
+    display: none;
+  }
+  .tmjs-modal .mjvp-pickup-filter.reset:after {
+    content: 'X';
+  }
+  .col-sm-12 {
+    width: 100%;
+  }
+  .p-t-sm-0 {
+    padding-top: 0px!important;
+  }
+  .tmjs-reset-container {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+  }
+  #filter-container > div {
+    height: 30px;
+  }
+}
