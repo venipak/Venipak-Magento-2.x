@@ -12,9 +12,12 @@ class PickupPointManagement implements PickupPointManagementInterface {
 
     protected $pickupPointFactory;
     protected $carrier;
+
     /**
-     * OfficeManagement constructor.
-     * @param PickupPointInterfaceFactory $officeInterfaceFactory
+     * PickupPointManagement constructor.
+     * 
+     * @param PickupPointInterfaceFactory $pickupPointInterfaceFactory
+     * @param \Mijora\Venipak\Model\Carrier $carrier
      */
     
     public function __construct(
@@ -27,13 +30,12 @@ class PickupPointManagement implements PickupPointManagementInterface {
     }
 
     /**
-     * Get offices for the given postcode and city
+     * Get pickup points
      *
-     * @param string $postcode
-     * @param string $limit
-     * @param string $country
      * @param string $group
-     * @return \Mijora\Venipak\Api\Data\OfficeInterface[]
+     * @param string $city
+     * @param string $country
+     * @return array
      */
     public function fetchPickupPoints($group, $city, $country) {
         $mapped_pickup_points = [];
