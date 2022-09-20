@@ -38,11 +38,11 @@ class Front extends \Magento\Framework\App\Action\Action {
         $weight = $this->getRequest()->getParam('weight');
         
         $filter_key = $this->getRequest()->getParam('filter_key');
-        $filtered_terminals = $this->getFilteredTerminals($filter_key, $country, $weight);
+        $filtered_terminals = $this->getFilteredTerminals($country, $weight, $filter_key);
         die(json_encode(['mjvp_terminals' => $filtered_terminals]));
     }
 
-    private function getFilteredTerminals($filters = '', $country, $weight) {
+    private function getFilteredTerminals($country, $weight, $filters = '') {
         
             $all_terminals_info = $this->carrier->getTerminals($country);
             
