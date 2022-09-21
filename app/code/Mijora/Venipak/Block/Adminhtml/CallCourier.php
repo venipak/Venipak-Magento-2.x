@@ -20,8 +20,8 @@ class CallCourier extends \Magento\Backend\Block\Template {
      */
     public function __construct(
             \Magento\Backend\Block\Template\Context $context,
-            array $data = [],
-            \Mijora\Venipak\Model\WarehouseFactory $warehouseFactory
+            \Mijora\Venipak\Model\WarehouseFactory $warehouseFactory,
+            array $data = []
     ) {
 
         $this->warehouseFactory = $warehouseFactory;

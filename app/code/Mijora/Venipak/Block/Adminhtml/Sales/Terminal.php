@@ -26,8 +26,8 @@ class Terminal extends \Magento\Backend\Block\Template {
     public function __construct(
         \Magento\Backend\Block\Template\Context $context,
         \Magento\Framework\Registry $registry,
-        array $data = [], 
-        \Mijora\Venipak\Model\Carrier $carrier
+        \Mijora\Venipak\Model\Carrier $carrier,
+        array $data = []
     ) {
         $this->coreRegistry = $registry;
         $this->carrier = $carrier;
