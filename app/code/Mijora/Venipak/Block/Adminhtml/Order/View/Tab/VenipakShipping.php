@@ -32,11 +32,11 @@ class VenipakShipping extends \Magento\Backend\Block\Template implements \Magent
     public function __construct(
             \Magento\Backend\Block\Template\Context $context,
             \Magento\Framework\Registry $registry,
-            array $data = [],
             \Mijora\Venipak\Model\OrderFactory $orderFactory,
             \Mijora\Venipak\Model\WarehouseFactory $warehouseFactory,
             \Magento\Framework\UrlInterface $urlBuilder,
-            \Mijora\Venipak\Model\Carrier $carrier
+            \Mijora\Venipak\Model\Carrier $carrier,
+            array $data = []
     ) {
         $this->coreRegistry = $registry;
         $this->orderFactory = $orderFactory;
