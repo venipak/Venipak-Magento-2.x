@@ -40,7 +40,21 @@ define([
                     shippingAddress.extensionAttributes = {};
                 }
 
+                if (shippingAddress.extension_attributes === undefined) {
+                    shippingAddress.extension_attributes = {};
+                }
+
+
                 shippingAddress.extensionAttributes.venipak_data = JSON.stringify({ 
+                    'pickupPoint': terminal, 
+                    'doorCode': doorCode, 
+                    'warehouseNumber': warehouseNumber, 
+                    'cabinetNumber': cabinetNumber,
+                    'deliveryTime': deliveryTime,
+                    'callBeforeDelivery': callBeforeDelivery
+                });
+
+                shippingAddress.extension_attributes.venipak_data = JSON.stringify({ 
                     'pickupPoint': terminal, 
                     'doorCode': doorCode, 
                     'warehouseNumber': warehouseNumber, 

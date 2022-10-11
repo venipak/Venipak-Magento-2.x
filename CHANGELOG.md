@@ -1,3 +1,6 @@
+# 1.0.5 - 2022-10-11
+- Updated to work better with checkout modules
+
 # 1.0.4 - 2022-09-21
 - Compatibility fix for Magneto 2.4.5
 
