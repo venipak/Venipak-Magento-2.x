@@ -1,3 +1,8 @@
+# 1.0.6 - 2022-10-17
+- Fixed bug in terminal display, when order is closed
+- Fixed terminal changing in backend
+- Fixed Venipak shipping method selection in new order creation from backend
+
 # 1.0.5 - 2022-10-11
 - Updated to work better with checkout modules
 

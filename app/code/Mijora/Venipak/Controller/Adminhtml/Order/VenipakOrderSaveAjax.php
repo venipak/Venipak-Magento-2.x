@@ -68,31 +68,28 @@ class VenipakOrderSaveAjax extends \Magento\Backend\App\Action {
         
         $shippingAddress = $order->getShippingAddress();
         $data =  @json_decode($shippingAddress->getVenipakData());
-        if (is_object($data)){
-            $data->pickupPoint = $formData['pickup_point'];
-            $shippingAddress->setVenipakData(json_encode($data));
-            $shippingAddress->save();
+        if (!is_object($data)){
+            $data = new \stdClass();
         }
+        $data->pickupPoint = $formData['pickup_point'];
+        $shippingAddress->setVenipakData(json_encode($data));
+        $shippingAddress->save();
         
         $model->addData($modelData);
         
         try {
-                // Save news
-                $model->save();
+            $model->save();
 
-                return $resultJson->setData([
-                        'message' => 'Data saved',
-                            'error' => false
-                ]);
+            return $resultJson->setData([
+                'message' => 'Data saved',
+                'error' => false
+            ]);
                 
-            } catch (\Exception $e) {
-                return $resultJson->setData([
-                        'message' => $e->getMessage(),
-                            'error' => true
-                ]);
-            }
-        
-            
+        } catch (\Exception $e) {
+            return $resultJson->setData([
+                'message' => $e->getMessage(),
+                'error' => true
+            ]);
+        } 
     }
-
 }

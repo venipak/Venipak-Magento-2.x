@@ -22,7 +22,7 @@ define([
         }));
     }
 
-    $('#change-terminal').on('click', function () {
+    $('#change-terminal').on('click', function (e) {
         var select = $('#venipak_pickup_point');
         var url = select.attr('data-url');
         var order_id = select.attr('data-order');
@@ -40,7 +40,6 @@ define([
         }
     });
     $('#venipakorder_is_cod').on('change', function () {
-        console.log($('#venipakorder_is_cod').val());
         if ($('#venipakorder_is_cod').val() === "0") {
             $('#venipakorder_cod_amount').prop('disabled');
         } else {

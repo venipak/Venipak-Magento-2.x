@@ -1,17 +1,16 @@
 <?php
 $pickup_point = $this->getTerminalName();
-
-if ($pickup_point) {
+if ($this->isVenipakTerminal()) {
     $button = '<button id = "change-terminal" class = "action-secondary">' . __('Change') . '</button>';
     echo '<div style = "border-top:1px solid #ccc; padding: 10px;">';
-    echo '<b>' . __("Venipak pickup point") . '</b>: '; //.$pickup_point ;
+    echo '<b>' . __("Venipak pickup point") . '</b>: ';
     if ($this->getOrder()->getStatus() == "closed") {
-        echo $pickup_point . '</div>';
+        echo $pickup_point ? $pickup_point->name : 'Not selected';
     } else {
         ?>
         <?php $locs = $this->getTerminals($this->getOrder()); ?>
         <?php $current_terminal = $this->getCurrentTerminal(); ?>
-        <select name = "order[venipak_pickup_point]" id = "venipak_pickup_point" data-url = '<?= $this->getUrl('mijora_venipak/order/UpdateTerminal') ?>' data-order = '<?= $this->getOrder()->getId(); ?>' style = "display: inline; height: 32px;">
+        <select name = "order[venipak_pickup_point]" id = "venipak_pickup_point" data-url = '<?= $this->getUrl('mijora_venipak/order/updateterminal') ?>' data-order = '<?= $this->getOrder()->getId(); ?>' style = "display: inline; height: 32px;">
             <option value = "">Select pickup point</option>
             <?php
             $grouped_options = array();
@@ -37,7 +36,7 @@ if ($pickup_point) {
         </select>   
             <?php
             echo $button;
-            echo '</div>';
         }
+        echo '</div>';
     }
     ?>

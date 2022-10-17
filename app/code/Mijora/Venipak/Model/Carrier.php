@@ -315,8 +315,10 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
         $country_id = $this->_checkoutSession->getQuote()
                 ->getShippingAddress()
                 ->getCountryId();
-
         $allowed_countries = $this->getCode('country');
+        if (!$country_id) {
+            $country_id = $request->getDestCountryId();
+        }
         if (!isset($allowed_countries[$country_id])) {
             return false;
         }

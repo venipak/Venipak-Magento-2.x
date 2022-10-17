@@ -37,15 +37,17 @@ class Terminal extends \Magento\Backend\Block\Template {
     }
     
     public function getTerminalName(){
-        //$orderRepository = new \Magento\Sales\Model\OrderRepository();
-        $order_id = $this->getRequest()->getParam('order_id');
         $order = $this->getOrder();
-        //$order =  $orderRepository->get($order_id);
-        if (strtoupper($order->getData('shipping_method')) == strtoupper('venipak_PICKUP_POINT')) {
+        if ($this->isVenipakTerminal()) {
             return $this->getTerminal($order);
         }
         return false;
     
+    }
+
+    public function isVenipakTerminal(){
+        $order = $this->getOrder();
+        return strtoupper($order->getData('shipping_method')) == strtoupper('venipak_PICKUP_POINT');
     }
     
     public function getCurrentTerminal(){
