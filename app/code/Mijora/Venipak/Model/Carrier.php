@@ -345,7 +345,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
         }
 
         $keyword = $this->getConfigData('ignore_keyword');
-        if (trim($keyword)) {
+        if ($keyword && trim($keyword)) {
             foreach ($this->_checkoutSession->getQuote()->getItemsCollection() as $item) {
                 $product = $this->productFactory->create();
                 $product_id = $item->getProductId();

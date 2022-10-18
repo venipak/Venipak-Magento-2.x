@@ -1,3 +1,6 @@
+# 1.0.7 - 2022-10-18
+- Trim of null deprecation fix
+
 # 1.0.6 - 2022-10-17
 - Fixed bug in terminal display, when order is closed
 - Fixed terminal changing in backend
