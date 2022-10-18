@@ -1,3 +1,6 @@
+# 1.0.8 - 2022-10-18
+- Updated JS to work better with terminal selection in checkout
+
 # 1.0.7 - 2022-10-18
 - Trim of null deprecation fix
 
