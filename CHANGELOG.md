@@ -1,3 +1,6 @@
+# 1.0.9 - 2022-10-26
+- Updated to fix deprecation errors on php 8.1 strtoupper / strtolower on null values
+
 # 1.0.8 - 2022-10-18
 - Updated JS to work better with terminal selection in checkout
 

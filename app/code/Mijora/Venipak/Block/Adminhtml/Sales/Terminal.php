@@ -47,7 +47,7 @@ class Terminal extends \Magento\Backend\Block\Template {
 
     public function isVenipakTerminal(){
         $order = $this->getOrder();
-        return strtoupper($order->getData('shipping_method')) == strtoupper('venipak_PICKUP_POINT');
+        return strtoupper($order->getData('shipping_method') ?? '') == strtoupper('venipak_PICKUP_POINT');
     }
     
     public function getCurrentTerminal(){
@@ -55,7 +55,7 @@ class Terminal extends \Magento\Backend\Block\Template {
         $order_id = $this->getRequest()->getParam('order_id');
         $order = $this->getOrder();
         //$order =  $orderRepository->get($order_id);
-        if (strtoupper($order->getData('shipping_method')) == strtoupper('venipak_PICKUP_POINT')) {
+        if (strtoupper($order->getData('shipping_method') ?? '') == strtoupper('venipak_PICKUP_POINT')) {
             return $this->getTerminalId($order);
         }
         return false;

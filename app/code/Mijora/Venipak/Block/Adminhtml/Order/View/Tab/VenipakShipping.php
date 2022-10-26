@@ -136,13 +136,13 @@ class VenipakShipping extends \Magento\Backend\Block\Template implements \Magent
             'VENIPAK_PICKUP_POINT',
             'VENIPAK_COURIER'
         );
-        $order_shipping_method = strtoupper($order->getData('shipping_method'));
+        $order_shipping_method = strtoupper($order->getData('shipping_method') ?? '');
         return in_array($order_shipping_method, $methods);
     }
 
     public function getShippingMethod() {
         $order = $this->getOrder();
-        return str_ireplace('venipak_','',strtolower($order->getData('shipping_method')));
+        return str_ireplace('venipak_','',strtolower($order->getData('shipping_method') ?? ''));
     }
 
     /**
