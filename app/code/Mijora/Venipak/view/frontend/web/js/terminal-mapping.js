@@ -1320,9 +1320,9 @@ var Map = /*#__PURE__*/function () {
       var _this3 = this;
 
       // only update markers if we have terminal list
-      if (!this.locations.length) {
-        return this;
-      }
+      //if (!this.locations.length) {
+      //  return this;
+      //}
 
       if (this._markerLayer !== null) {
         this._markerLayer.clearLayers();
@@ -1355,7 +1355,9 @@ var Map = /*#__PURE__*/function () {
       }); // Update default center
 
 
-      this._defaultMapPos = this._markerLayer.getBounds().getCenter();
+      if (this.locations.length) {
+        this._defaultMapPos = this._markerLayer.getBounds().getCenter();
+      }
       return this;
     }
   }, {

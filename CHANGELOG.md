@@ -1,3 +1,6 @@
+# 1.0.10 - 2022-12-01
+- Bugfix in terminal maps filtering by type
+
 # 1.0.9 - 2022-10-26
 - Updated to fix deprecation errors on php 8.1 strtoupper / strtolower on null values
 
