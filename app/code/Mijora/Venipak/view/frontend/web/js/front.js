@@ -9,7 +9,7 @@ jQuery( document ).ready(function($) {
         venipak_custom_modal.tmjs.dom.addOverlay();
         
         const clickTarget = $(e.target);
-        if(clickTarget.hasClass('reset'))
+        if(clickTarget.hasClass('reset') || clickTarget.parent().hasClass('reset'))
         {
             $("#filter-container input[type='checkbox']").each((i, el) => {
                 $(el).prop('checked', true);
