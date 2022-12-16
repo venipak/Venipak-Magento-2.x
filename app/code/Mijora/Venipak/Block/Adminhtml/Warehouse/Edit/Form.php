@@ -62,14 +62,14 @@ class Form extends Generic {
             );
         }
         $fields = [
-            'name' => _('Warehouse number'),
+            'name' => __('Warehouse number'),
             'company_code' => __('Company code'),
             'contact_name' => __('Contact name'),
             'phone' => __('Phone'),
-            'address' => _('Address'),
-            'city' => _('City'),
-            'postcode' => _('Postcode'),
-            'country' => _('Country code'),
+            'address' => __('Address'),
+            'city' => __('City'),
+            'postcode' => __('Postcode'),
+            'country' => __('Country code'),
         ];
         foreach ($fields as $key => $field) {
             $fieldset->addField(

@@ -1,3 +1,6 @@
+# 1.0.12 - 2022-12-16
+- Bug fix string translation in warehouse create window
+
 # 1.0.11 - 2022-12-02
 - Small bugfix in terminal map search reset
 
