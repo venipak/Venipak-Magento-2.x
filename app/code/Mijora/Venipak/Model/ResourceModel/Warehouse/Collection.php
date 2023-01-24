@@ -17,4 +17,12 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
         $this->_init('Mijora\Venipak\Model\Warehouse', 'Mijora\Venipak\Model\ResourceModel\Warehouse');
     }
 
+    protected function _renderFiltersBefore() {
+        if (isset($this->_orders['default'])){
+            $this->_orders['`default`'] = $this->_orders['default'];
+            unset($this->_orders['default']);
+        }
+        parent::_renderFiltersBefore();
+    }
+
 }

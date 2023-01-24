@@ -1,3 +1,6 @@
+# 1.0.13 - 2023-01-24
+- Bug fix in orders, manifets, warehouses filtering and sorting
+
 # 1.0.12 - 2022-12-16
 - Bug fix string translation in warehouse create window
 
