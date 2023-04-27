@@ -1,3 +1,6 @@
+# Unreleased
+- Fix json_decode() deprecation error when got value "null" on PHP 8.1
+
 # 1.0.13 - 2023-01-24
 - Bug fix in orders, manifets, warehouses filtering and sorting
 
