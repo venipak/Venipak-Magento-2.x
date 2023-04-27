@@ -396,6 +396,9 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
                 if (count($data) != 3) {
                     continue;
                 }
+                if ($weight == 0 && $data[0] == 0) {
+                    return $data[2];
+                }
                 if ($weight > $data[0] && $weight <= $data[1]) {
                     return $data[2];
                 }

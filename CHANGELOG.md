@@ -1,5 +1,6 @@
 # Unreleased
 - Fix json_decode() deprecation error when got value "null" on PHP 8.1
+- Fixed price when using price by weight and cart weight is zero
 
 # 1.0.13 - 2023-01-24
 - Bug fix in orders, manifets, warehouses filtering and sorting

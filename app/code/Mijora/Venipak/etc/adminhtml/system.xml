@@ -115,7 +115,7 @@
                 <field id="price_by_country" translate="label" type="select" sortOrder="181" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Set price by country</label>
                     <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
-                    <comment>Price can be enetered in fixed number format or weight range: 0:1:5|1:10:6, means from 0 to 1 kg - 5 Eur, from 1 to 10kg 6 Eur</comment>
+                    <comment>Price can be entered in fixed number format or weight range: 0:1:5|1:5:6.59|5:10:8.1|20:30:12, means from 0 to 1 kg - 5 Eur, from 1.001 to 5 kg 6.59 Eur, from 5.001 to 10 kg 8.1 Eur, from 20.001 to 30 kg 12 Eur. If weight not exist in ranges, then used default value 5 Eur</comment>
                 </field>
                 
                 <field id="courier_price" translate="label" type="text" sortOrder="182" showInDefault="1" showInWebsite="1" showInStore="1">
