@@ -1,4 +1,4 @@
-# Unreleased
+# 1.0.14 - 2023-04-27
 - Fix json_decode() deprecation error when got value "null" on PHP 8.1
 - Fixed price when using price by weight and cart weight is zero
 
