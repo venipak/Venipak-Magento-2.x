@@ -68,13 +68,13 @@ $canShow = $block->isVenipakShippingMethod();
                         <div class="admin__field">
                             <label for="venipakorder_weight" class="admin__field-label"><?= __('Weight (kg)') ?></label>
                             <div class="admin__field-control">
-                                <input type ="number" name="venipakorder[weight]" value ="<?= $venipakOrder->getWeight(); ?>" id="venipakorder_weight" class="admin__control-text"/>
+                                <input type ="number" name="venipakorder[weight]" value ="<?= $venipakOrder->getWeight(); ?>" id="venipakorder_weight" class="admin__control-text" step="0.001"/>
                             </div>
                         </div>
                         <div class="admin__field">
                             <label for="venipakorder_cod_amount" class="admin__field-label"><?= __('C.O.D. amount') ?></label>
                             <div class="admin__field-control">
-                                <input type ="number" name="venipakorder[cod_amount]" value ="<?= $venipakOrder->getCodAmount(); ?>" id="venipakorder_cod_amount" class="admin__control-text"/>
+                                <input type ="number" name="venipakorder[cod_amount]" value ="<?= $venipakOrder->getCodAmount(); ?>" id="venipakorder_cod_amount" class="admin__control-text" step="0.01"/>
                             </div>
                         </div>
                         <div class="admin__field venipakorder_pickup_point_container">
