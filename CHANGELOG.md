@@ -1,5 +1,6 @@
 # Unreleased
 - Fixed Venipak submenu showing
+- Fixed error when saving Venipak order data when warehouse is not created
 
 # 1.0.14 - 2023-04-27
 - Fix json_decode() deprecation error when got value "null" on PHP 8.1
