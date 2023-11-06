@@ -1,0 +1,14 @@
+<?xml version="1.0" ?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Acl/etc/acl.xsd">
+    <acl>
+        <resources>
+            <resource id="Magento_Backend::admin">
+                <resource id="Mijora_Venipak::menu" title="Venipak" sortOrder="10">
+                    <resource id="Mijora_Venipak::order" title="Grid" sortOrder="10" />
+                    <resource id="Mijora_Venipak::manifest" title="Grid" sortOrder="12" />
+                    <resource id="Mijora_Venipak::warehouse" title="Grid" sortOrder="14" />
+                </resource>
+            </resource>
+        </resources>
+    </acl>
+</config>

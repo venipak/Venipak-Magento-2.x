@@ -267,8 +267,8 @@ class InstallSchema implements InstallSchemaInterface {
                     )
                     ->addColumn(
                             'weight',
-                            \Magento\Framework\DB\Ddl\Table::TYPE_FLOAT,
-                            null,
+                            \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
+                            '10,3',
                             [],
                             'Weight'
                     )
@@ -281,8 +281,8 @@ class InstallSchema implements InstallSchemaInterface {
                     )
                     ->addColumn(
                             'cod_amount',
-                            \Magento\Framework\DB\Ddl\Table::TYPE_FLOAT,
-                            null,
+                            \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
+                            '10,2',
                             [],
                             'COD amount'
                     )

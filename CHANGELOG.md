@@ -1,3 +1,8 @@
+# 1.0.15 - 2023-11-06
+- Fixed Venipak submenu showing
+- Fixed error when saving Venipak order data when warehouse is not created
+- Fixed saving the Venipak order decimal values
+
 # 1.0.14 - 2023-04-27
 - Fix json_decode() deprecation error when got value "null" on PHP 8.1
 - Fixed price when using price by weight and cart weight is zero

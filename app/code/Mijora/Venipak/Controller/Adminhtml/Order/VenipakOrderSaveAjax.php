@@ -46,6 +46,13 @@ class VenipakOrderSaveAjax extends \Magento\Backend\App\Action {
         $order->load($orderId);
         
         $formData = $this->getRequest()->getParam('venipakorder');
+
+        if ( empty($formData['warehouse']) ) {
+            return $resultJson->setData([
+                'message' => 'Warehouse not selected',
+                'error' => false
+            ]);
+        }
         
         $modelData = [
             'number_of_packages' => $formData['number_of_packages'],
