@@ -33,6 +33,29 @@ class UpgradeSchema implements UpgradeSchemaInterface {
                 );
             }
         }
+
+        if (version_compare($context->getVersion(), '1.0.15', '<')) {
+            $installer->getConnection()->changeColumn(
+                $installer->getTable('venipak_order'),
+                'cod_amount',
+                'cod_amount',
+                [
+                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
+                    'length' => '10,2',
+                    'comment' => 'COD amount',
+                ]
+            );
+            $installer->getConnection()->changeColumn(
+                $installer->getTable('venipak_order'),
+                'weight',
+                'weight',
+                [
+                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
+                    'length' => '10,3',
+                    'comment' => 'Weight',
+                ]
+            );
+        }
         $setup->endSetup();
     }
 
