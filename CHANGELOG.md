@@ -1,3 +1,6 @@
+# Unreleased
+- Show terminal selection in Reorder
+
 # 1.0.15 - 2023-11-06
 - Fixed Venipak submenu showing
 - Fixed error when saving Venipak order data when warehouse is not created
