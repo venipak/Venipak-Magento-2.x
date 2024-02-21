@@ -1,4 +1,4 @@
-# Unreleased
+# 1.0.16 - 2024-02-21
 - Show terminal selection in Reorder
 
 # 1.0.15 - 2023-11-06
