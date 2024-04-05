@@ -465,7 +465,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
         if (!is_array($trackings)) {
             $trackings = [$trackings];
         }
-        $this->_getXMLTracking($trackings);
+        //$this->_getXMLTracking($trackings);
 
         return $this->_result;
     }

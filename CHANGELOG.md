@@ -1,3 +1,6 @@
+# Unreleased
+- Disabled the use of non-existent shipment tracking function
+
 # 1.0.16 - 2024-02-21
 - Show terminal selection in Reorder
 
