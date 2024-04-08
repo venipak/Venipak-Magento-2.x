@@ -1,1 +1,1 @@
-# Venipak-Magento-2.x
+# Venipak module for Magento 2.x
