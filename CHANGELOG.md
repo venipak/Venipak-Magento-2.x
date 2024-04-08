@@ -1,4 +1,4 @@
-# Unreleased
+# 1.0.17 - 2024-04-08
 - Disabled the use of non-existent shipment tracking function
 
 # 1.0.16 - 2024-02-21
