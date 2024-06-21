@@ -685,8 +685,12 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
                     }
                 } else {
                     $error_text = '<ul>';
-                    foreach ($status['error'] as $error) {
-                        $error_text .= '<li>' . $error['text'] . '</li>';
+                    if (isset($status['error']['text'])) {
+                        $error_text .= '<li>' . $status['error']['text'] . '</li>';
+                    } else {
+                        foreach ($status['error'] as $error) {
+                            $error_text .= '<li>' . $error['text'] . '</li>';
+                        }
                     }
                     $error_text .= '</ul>';
                     throw new \Exception($error_text);
