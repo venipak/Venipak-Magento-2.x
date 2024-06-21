@@ -1,3 +1,6 @@
+# Unreleased
+- Fixed display of error messages when shipments failed to register
+
 # 1.0.17 - 2024-04-08
 - Disabled the use of non-existent shipment tracking function
 
