@@ -684,10 +684,11 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
                         $this->saveOrderData($order_id, [$status['text']], $venipakManifest, ($magento_action && $tmp_counter == 1));
                     }
                 } else {
-                    $error_text = '';
+                    $error_text = '<ul>';
                     foreach ($status['error'] as $error) {
-                        $error_text .= $status['error']['text'] . '<br/>';
+                        $error_text .= '<li>' . $error['text'] . '</li>';
                     }
+                    $error_text .= '</ul>';
                     throw new \Exception($error_text);
                 }
             }
