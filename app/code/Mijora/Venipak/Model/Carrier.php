@@ -471,6 +471,26 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
     }
 
     /**
+     * Get tracking info
+     * 
+     * @param string $trackingNumber
+     * @return object
+     */
+    public function getTrackingInfo($trackingNumber) {
+        $tracking = $this->_trackStatusFactory->create();
+
+        $url = 'https://venipak.com/tracking/track/' . $trackingNumber;
+
+        $tracking->setData([
+            'carrier' => $this->_code,
+            'carrier_title' => $this->getConfigData('title'),
+            'tracking' => $trackingNumber,
+            'url' => $url,
+        ]);
+        return $tracking;
+    }
+
+    /**
      * Set tracking request
      *
      * @return void
