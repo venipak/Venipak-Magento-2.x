@@ -273,7 +273,11 @@ class MjvpVenipak
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => $request_type,
             CURLOPT_POSTFIELDS => $params,
-            CURLOPT_HTTPHEADER => [ 'Reference: Magento 2 v' . $this->_moduleVersion]
+            CURLOPT_HTTPHEADER => [
+                "client-software-name: Magento",
+                "client-software-version: " . $this->getMagentoVersion(),
+                "client-module-version: " . $this->_moduleVersion,
+            ]
         );
 
         curl_setopt_array($curl, $curl_options);
@@ -292,5 +296,12 @@ class MjvpVenipak
     {
         json_decode($string);
         return json_last_error() === JSON_ERROR_NONE;
+    }
+
+    private function getMagentoVersion()
+    {
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $productMetadata = $objectManager->get('Magento\Framework\App\ProductMetadataInterface');
+        return $productMetadata->getVersion();
     }
 }
