@@ -38,6 +38,8 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
      */
     protected $_code = self::CODE;
 
+    protected $_moduleVersion = '1.0.17';
+
     /**
      * Rate request data
      *
@@ -192,7 +194,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
         }
         $this->api->setURLs($this->getConfigData('api_prod_url'), $this->getConfigData('api_test_url'));
         
-        $this->api->setVersion("1.0.2");
+        $this->api->setVersion($this->_moduleVersion);
         if ($this->getConfigFlag('sender_address')){
             $this->api->setConsignor($this->buildConsignorXml());
         }
