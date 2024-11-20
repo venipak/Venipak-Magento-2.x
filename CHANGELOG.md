@@ -1,3 +1,8 @@
+# 1.0.18 - 2024-11-20
+- Fixed display of error messages when shipments failed to register
+- Fixed the Magento shipment tracking page
+- Added website and module versions to the request which is sent to Venipak
+
 # 1.0.17 - 2024-04-08
 - Disabled the use of non-existent shipment tracking function
 

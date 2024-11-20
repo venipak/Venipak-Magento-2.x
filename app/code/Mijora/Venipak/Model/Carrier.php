@@ -38,6 +38,8 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
      */
     protected $_code = self::CODE;
 
+    protected $_moduleVersion = '1.0.17';
+
     /**
      * Rate request data
      *
@@ -192,7 +194,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
         }
         $this->api->setURLs($this->getConfigData('api_prod_url'), $this->getConfigData('api_test_url'));
         
-        $this->api->setVersion("1.0.2");
+        $this->api->setVersion($this->_moduleVersion);
         if ($this->getConfigFlag('sender_address')){
             $this->api->setConsignor($this->buildConsignorXml());
         }
@@ -471,6 +473,26 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
     }
 
     /**
+     * Get tracking info
+     * 
+     * @param string $trackingNumber
+     * @return object
+     */
+    public function getTrackingInfo($trackingNumber) {
+        $tracking = $this->_trackStatusFactory->create();
+
+        $url = 'https://venipak.com/tracking/track/' . $trackingNumber;
+
+        $tracking->setData([
+            'carrier' => $this->_code,
+            'carrier_title' => $this->getConfigData('title'),
+            'tracking' => $trackingNumber,
+            'url' => $url,
+        ]);
+        return $tracking;
+    }
+
+    /**
      * Set tracking request
      *
      * @return void
@@ -684,10 +706,15 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
                         $this->saveOrderData($order_id, [$status['text']], $venipakManifest, ($magento_action && $tmp_counter == 1));
                     }
                 } else {
-                    $error_text = '';
-                    foreach ($status['error'] as $error) {
-                        $error_text .= $status['error']['text'] . '<br/>';
+                    $error_text = '<ul>';
+                    if (isset($status['error']['text'])) {
+                        $error_text .= '<li>' . $status['error']['text'] . '</li>';
+                    } else {
+                        foreach ($status['error'] as $error) {
+                            $error_text .= '<li>' . $error['text'] . '</li>';
+                        }
                     }
+                    $error_text .= '</ul>';
                     throw new \Exception($error_text);
                 }
             }
