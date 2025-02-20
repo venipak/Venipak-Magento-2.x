@@ -378,16 +378,16 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
             $method->setMethod($allowedMethod);
             $method->setMethodTitle($this->getCode('method', $allowedMethod));
 
-            $freeFrom = 0;
+            $freeFrom = false;
             if ($allowedMethod == "COURIER") {
                 $amount = $courier_price;
-                $freeFrom = $freeFromCourier;
+                $freeFrom = $this->parsePriceByCountryValue($freeFromCourier, $country_id, false);
             }
             if ($allowedMethod == "PICKUP_POINT") {
                 $amount = $pickup_point_price;
-                $freeFrom = $freeFromPickup;
+                $freeFrom = $this->parsePriceByCountryValue($freeFromPickup, $country_id, false);
             }
-            if ($isFreeEnabled && $packageValue >= $freeFrom)
+            if ($isFreeEnabled && $freeFrom && $packageValue >= $freeFrom)
                 $amount = 0;
 
             $method->setPrice($amount);
@@ -396,6 +396,31 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
             $result->append($method);
         }
         return $result;
+    }
+
+    private function parsePriceByCountryValue($value, $country_code, $defaultPrice = 5) {
+        if (stripos($value, ':') !== false) {
+            $rows = explode('|', $value);
+            $other_value = $defaultPrice;
+
+            foreach ($rows as $row) {
+                $exploded_row = explode(':', $row, 2);
+
+                if (count($exploded_row) === 2) {
+                    list($code, $price) = $exploded_row;
+
+                    if (is_numeric($price)) {
+                        if (strtoupper($code) === strtoupper($country_code)) {
+                            return (float) $price;
+                        }
+                    }
+                } elseif (is_numeric($exploded_row[0])) {
+                    $other_value = (float) $exploded_row[0];
+                }
+            }
+            return $other_value;
+        }
+        return is_numeric($value) ? (float) $value : $defaultPrice;
     }
 
     private function parsePriceRange($price_data, $weight, $defaultPrice = 5) {
