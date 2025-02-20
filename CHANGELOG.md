@@ -1,4 +1,4 @@
-# Unreleased
+# 1.0.19 - 2025-02-20
 - Fixed the working of the "Free from" function
 - The "Free from" field is divided into 2 separate fields for courier and pickup point delivery methods
 - Added possibility to specify different max weight for each delivery method
