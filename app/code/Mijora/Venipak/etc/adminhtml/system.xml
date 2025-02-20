@@ -104,8 +104,15 @@
                     <label>Free Shipping Amount Threshold</label>
                     <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
                 </field>
-                <field id="free_shipping_subtotal" translate="label" type="text" sortOrder="180" showInDefault="1" showInWebsite="1" showInStore="0">
-                    <label>Free from</label>
+                <field id="free_shipping_subtotal_c" translate="label" type="text" sortOrder="180" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Courier free from</label>
+                    <validate>validate-number validate-zero-or-greater</validate>
+                    <depends>
+                        <field id="free_shipping_enable">1</field>
+                    </depends>
+                </field>
+                <field id="free_shipping_subtotal_pp" translate="label" type="text" sortOrder="180" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Pickup point free from</label>
                     <validate>validate-number validate-zero-or-greater</validate>
                     <depends>
                         <field id="free_shipping_enable">1</field>

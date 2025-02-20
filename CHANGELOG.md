@@ -1,3 +1,7 @@
+# Unreleased
+- Fixed the working of the "Free from" function
+- The "Free from" field is divided into 2 separate fields for courier and pickup point delivery methods
+
 # 1.0.18 - 2024-11-20
 - Fixed display of error messages when shipments failed to register
 - Fixed the Magento shipment tracking page

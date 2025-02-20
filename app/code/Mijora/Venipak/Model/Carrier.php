@@ -295,13 +295,19 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
         $result = $this->_rateFactory->create();
 
         $weight = $request->getPackageWeight();
-        $packageValue = $request->getBaseCurrency()->convert($request->getPackageValueWithDiscount(), $request->getPackageCurrency());
-        $packageValue = $request->getPackageValueWithDiscount();
+        //$packageValue = $request->getBaseCurrency()->convert($request->getPackageValueWithDiscount(), $request->getPackageCurrency());
+        //$packageValue = $request->getPackageValueWithDiscount();
+        if ($request->getPackageValueWithDiscount() > 0) {
+            $packageValue = $request->getPackageValueWithDiscount();
+        } else {
+            $packageValue = $request->getPackageValue() + $request->getPackageValueWithDiscount();
+        }
 
         $this->_updateFreeMethodQuote($request);
         $isFreeEnabled = $this->getConfigData('free_shipping_enable');
         $allowedMethods = explode(',', $this->getConfigData('allowed_methods'));
-        $freeFrom = $this->getConfigData('free_shipping_subtotal');
+        $freeFromCourier = $this->getConfigData('free_shipping_subtotal_c');
+        $freeFromPickup = $this->getConfigData('free_shipping_subtotal_pp');
 
         $max_weight = $this->getConfigData('max_package_weight');
 
@@ -372,11 +378,14 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
             $method->setMethod($allowedMethod);
             $method->setMethodTitle($this->getCode('method', $allowedMethod));
 
+            $freeFrom = 0;
             if ($allowedMethod == "COURIER") {
                 $amount = $courier_price;
+                $freeFrom = $freeFromCourier;
             }
             if ($allowedMethod == "PICKUP_POINT") {
                 $amount = $pickup_point_price;
+                $freeFrom = $freeFromPickup;
             }
             if ($isFreeEnabled && $packageValue >= $freeFrom)
                 $amount = 0;
