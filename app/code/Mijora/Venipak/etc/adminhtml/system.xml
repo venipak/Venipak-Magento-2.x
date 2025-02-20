@@ -95,8 +95,12 @@
                     <source_model>Mijora\Venipak\Model\Source\LabelSize</source_model>
                 </field>
                 
-                <field id="max_package_weight" translate="label" type="text" sortOrder="140" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Maximum Package Weight</label>
+                <field id="max_package_weight_c" translate="label" type="text" sortOrder="140" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                    <label>Courier maximum package weight</label>
+                    <validate>validate-number validate-zero-or-greater</validate>
+                </field>
+                <field id="max_package_weight_pp" translate="label" type="text" sortOrder="140" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                    <label>Pickup point maximum package weight</label>
                     <validate>validate-number validate-zero-or-greater</validate>
                 </field>
                 <!-- Free shipping price toggler -->

@@ -308,12 +308,8 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
         $allowedMethods = explode(',', $this->getConfigData('allowed_methods'));
         $freeFromCourier = $this->getConfigData('free_shipping_subtotal_c');
         $freeFromPickup = $this->getConfigData('free_shipping_subtotal_pp');
-
-        $max_weight = $this->getConfigData('max_package_weight');
-
-        if ($weight > $max_weight) {
-            return false;
-        }
+        $maxWeightCourier = $this->getConfigData('max_package_weight_c');
+        $maxWeightPickup = $this->getConfigData('max_package_weight_pp');
 
         $courier_price = $this->getConfigData('courier_price');
         $pickup_point_price = $this->getConfigData('pickup_point_price');
@@ -380,10 +376,16 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
 
             $freeFrom = false;
             if ($allowedMethod == "COURIER") {
+                if (! empty($maxWeightCourier) && $weight > $maxWeightCourier) {
+                    continue;
+                }
                 $amount = $courier_price;
                 $freeFrom = $this->parsePriceByCountryValue($freeFromCourier, $country_id, false);
             }
             if ($allowedMethod == "PICKUP_POINT") {
+                if (! empty($maxWeightPickup) && $weight > $maxWeightPickup) {
+                    continue;
+                }
                 $amount = $pickup_point_price;
                 $freeFrom = $this->parsePriceByCountryValue($freeFromPickup, $country_id, false);
             }
