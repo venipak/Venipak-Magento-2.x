@@ -295,19 +295,21 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
         $result = $this->_rateFactory->create();
 
         $weight = $request->getPackageWeight();
-        $packageValue = $request->getBaseCurrency()->convert($request->getPackageValueWithDiscount(), $request->getPackageCurrency());
-        $packageValue = $request->getPackageValueWithDiscount();
+        //$packageValue = $request->getBaseCurrency()->convert($request->getPackageValueWithDiscount(), $request->getPackageCurrency());
+        //$packageValue = $request->getPackageValueWithDiscount();
+        if ($request->getPackageValueWithDiscount() > 0) {
+            $packageValue = $request->getPackageValueWithDiscount();
+        } else {
+            $packageValue = $request->getPackageValue() + $request->getPackageValueWithDiscount();
+        }
 
         $this->_updateFreeMethodQuote($request);
         $isFreeEnabled = $this->getConfigData('free_shipping_enable');
         $allowedMethods = explode(',', $this->getConfigData('allowed_methods'));
-        $freeFrom = $this->getConfigData('free_shipping_subtotal');
-
-        $max_weight = $this->getConfigData('max_package_weight');
-
-        if ($weight > $max_weight) {
-            return false;
-        }
+        $freeFromCourier = $this->getConfigData('free_shipping_subtotal_c');
+        $freeFromPickup = $this->getConfigData('free_shipping_subtotal_pp');
+        $maxWeightCourier = $this->getConfigData('max_package_weight_c');
+        $maxWeightPickup = $this->getConfigData('max_package_weight_pp');
 
         $courier_price = $this->getConfigData('courier_price');
         $pickup_point_price = $this->getConfigData('pickup_point_price');
@@ -372,13 +374,22 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
             $method->setMethod($allowedMethod);
             $method->setMethodTitle($this->getCode('method', $allowedMethod));
 
+            $freeFrom = false;
             if ($allowedMethod == "COURIER") {
+                if (! empty($maxWeightCourier) && $weight > $maxWeightCourier) {
+                    continue;
+                }
                 $amount = $courier_price;
+                $freeFrom = $this->parsePriceByCountryValue($freeFromCourier, $country_id, false);
             }
             if ($allowedMethod == "PICKUP_POINT") {
+                if (! empty($maxWeightPickup) && $weight > $maxWeightPickup) {
+                    continue;
+                }
                 $amount = $pickup_point_price;
+                $freeFrom = $this->parsePriceByCountryValue($freeFromPickup, $country_id, false);
             }
-            if ($isFreeEnabled && $packageValue >= $freeFrom)
+            if ($isFreeEnabled && $freeFrom && $packageValue >= $freeFrom)
                 $amount = 0;
 
             $method->setPrice($amount);
@@ -387,6 +398,31 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
             $result->append($method);
         }
         return $result;
+    }
+
+    private function parsePriceByCountryValue($value, $country_code, $defaultPrice = 5) {
+        if (stripos($value, ':') !== false) {
+            $rows = explode('|', $value);
+            $other_value = $defaultPrice;
+
+            foreach ($rows as $row) {
+                $exploded_row = explode(':', $row, 2);
+
+                if (count($exploded_row) === 2) {
+                    list($code, $price) = $exploded_row;
+
+                    if (is_numeric($price)) {
+                        if (strtoupper($code) === strtoupper($country_code)) {
+                            return (float) $price;
+                        }
+                    }
+                } elseif (is_numeric($exploded_row[0])) {
+                    $other_value = (float) $exploded_row[0];
+                }
+            }
+            return $other_value;
+        }
+        return is_numeric($value) ? (float) $value : $defaultPrice;
     }
 
     private function parsePriceRange($price_data, $weight, $defaultPrice = 5) {
