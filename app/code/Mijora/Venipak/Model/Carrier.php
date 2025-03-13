@@ -401,7 +401,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
     }
 
     private function parsePriceByCountryValue($value, $country_code, $defaultPrice = 5) {
-        if (stripos($value, ':') !== false) {
+        if (!empty($value) && stripos($value, ':') !== false) {
             $rows = explode('|', $value);
             $other_value = $defaultPrice;
 
