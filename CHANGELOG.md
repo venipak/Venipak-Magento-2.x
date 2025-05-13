@@ -1,3 +1,6 @@
+# Unreleased
+- Fixed trailing comma in Block\Adminhtml\Order\Grid class
+
 # 1.0.20 - 2025-03-13
 - Fixed bug from last update
 
