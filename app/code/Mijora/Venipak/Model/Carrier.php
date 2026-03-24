@@ -38,7 +38,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
      */
     protected $_code = self::CODE;
 
-    protected $_moduleVersion = '1.0.17';
+    protected $_moduleVersion = '1.0.21';
 
     /**
      * Rate request data

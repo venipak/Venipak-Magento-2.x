@@ -1,3 +1,7 @@
+# 1.0.21 - 2026-03-24
+- Fixed trailing comma in Block\Adminhtml\Order\Grid class
+- Fixed so that the logo is no longer displayed on the Checkout page when a custom title is used
+
 # 1.0.20 - 2025-03-13
 - Fixed bug from last update
 

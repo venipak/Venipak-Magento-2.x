@@ -82,7 +82,7 @@ class Grid extends Extended {
         )->join(
                 ['customer' => $venipakOrders->getTable('sales_order_address')],
                 'customer.parent_id = order.entity_id AND customer.address_type = "shipping"',
-                ['customer.firstname' => 'firstname', 'customer.lastname' => 'lastname'],
+                ['customer.firstname' => 'firstname', 'customer.lastname' => 'lastname']
         );
 
         $this->setCollection($venipakOrders);
