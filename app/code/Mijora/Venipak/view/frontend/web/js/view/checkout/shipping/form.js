@@ -21,13 +21,13 @@ define([
             template: 'Mijora_Venipak/checkout/shipping/form'
         },
         
-        
+        venipakConfig: null,
 
         initialize: function (config) {
+            this.venipakConfig = window.checkoutConfig && window.checkoutConfig.venipak;
             this.pickupPoints = ko.observableArray();
             this.isLoading = false;
             this._super();
-
         },
         hideSelect: function () {
             //console.log('hide');
@@ -75,6 +75,9 @@ define([
         },
         
         addLogo: function() {
+            if (this.venipakConfig && this.venipakConfig.is_custom_title) {
+                return;
+            }
             if ($('#checkout-shipping-method-load img.venipak-logo').length === 0){
                 if ($('#label_carrier_PICKUP_POINT_venipak').length > 0){
                     $('#label_carrier_PICKUP_POINT_venipak').html('<img src = "' + require.toUrl('Mijora_Venipak/images/') + 'venipak-logo-v2-resized.png" class = "venipak-logo" alt = "Venipak"/>');
