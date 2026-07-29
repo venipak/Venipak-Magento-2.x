@@ -324,7 +324,16 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
             $country_id = $request->getDestCountryId();
         }
         if (!isset($allowed_countries[$country_id])) {
+            $this->_logger->debug('Venipak collectRates: blocked, country not allowed - ' . $country_id);
             return false;
+        }
+
+        if ($this->getConfigData('sallowspecific') == 1) {
+            $specificCountries = explode(',', (string) $this->getConfigData('specificcountry'));
+            if (!in_array($country_id, $specificCountries)) {
+                $this->_logger->debug('Venipak collectRates: blocked, country not in Specific Countries list - ' . $country_id);
+                return false;
+            }
         }
 
         if ($isPriceByCountry) {
@@ -357,6 +366,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
                 $description = $product->getDescription();
                 if (stripos($description, $keyword) !== false) {
                     //found keyword, no shipping possible
+                    $this->_logger->debug('Venipak collectRates: blocked, ignore_keyword matched product #' . $product_id);
                     return false;
                 }
             }
@@ -377,6 +387,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
             $freeFrom = false;
             if ($allowedMethod == "COURIER") {
                 if (! empty($maxWeightCourier) && $weight > $maxWeightCourier) {
+                    $this->_logger->debug('Venipak collectRates: COURIER skipped, weight ' . $weight . ' > max ' . $maxWeightCourier);
                     continue;
                 }
                 $amount = $courier_price;
@@ -384,6 +395,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
             }
             if ($allowedMethod == "PICKUP_POINT") {
                 if (! empty($maxWeightPickup) && $weight > $maxWeightPickup) {
+                    $this->_logger->debug('Venipak collectRates: PICKUP_POINT skipped, weight ' . $weight . ' > max ' . $maxWeightPickup);
                     continue;
                 }
                 $amount = $pickup_point_price;
