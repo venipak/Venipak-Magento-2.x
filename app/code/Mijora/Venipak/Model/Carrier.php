@@ -328,6 +328,14 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
             return false;
         }
 
+        if ($this->getConfigData('sallowspecific') == 1) {
+            $specificCountries = explode(',', (string) $this->getConfigData('specificcountry'));
+            if (!in_array($country_id, $specificCountries)) {
+                $this->_logger->debug('Venipak collectRates: blocked, country not in Specific Countries list - ' . $country_id);
+                return false;
+            }
+        }
+
         if ($isPriceByCountry) {
             switch ($country_id) {
                 case 'LT':
