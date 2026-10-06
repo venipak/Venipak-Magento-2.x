@@ -1,4 +1,4 @@
-# Unreleased
+# 1.1.0 - 2026-10-06
 - Fixed to display shipping methods based on the "Ship to Specific Countries" parameter
 - Added a log entry to determine the reason when a method is not displayed on the Checkout page
 - Added "Auto-register shipment on status" parameter to the module settings
