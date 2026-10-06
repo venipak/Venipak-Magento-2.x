@@ -11,6 +11,11 @@
     <type name="Magento\Quote\Model\Quote\Address">
         <plugin name="venipak-pickup-point" type="Mijora\Venipak\Model\Quote\AddressPlugin" sortOrder="1" disabled="false"/>
     </type>
+    <type name="Mijora\Venipak\Model\Observer\AutoRegisterShipmentObserver">
+        <arguments>
+            <argument name="carrier" xsi:type="object">Mijora\Venipak\Model\Carrier\Proxy</argument>
+        </arguments>
+    </type>
     <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
         <arguments>
             <argument name="collections" xsi:type="array">

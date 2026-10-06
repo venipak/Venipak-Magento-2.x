@@ -23,3 +23,6 @@ Pickup point,Paštomatas/atsiėmimo punktas
 "Auto-register shipment on status","Automatiškai registruoti siuntą esant būsenai"
 "Automatically register a shipment when the order status is changed to the selected status.","Automatiškai registruoti siuntą, kai užsakymo būsena pakeičiama į pasirinktą."
 "-- Disabled --","-- Išjungta --"
+"Venipak shipment for order #%1 registered automatically","Užsakymo #%1 Venipak siunta užregistruota automatiškai"
+"Failed to automatically register Venipak shipment for order #%1: %2","Nepavyko automatiškai užregistruoti užsakymo #%1 Venipak siuntos: %2"
+"Failed to automatically register Venipak shipment: %1","Nepavyko automatiškai užregistruoti Venipak siuntos: %1"

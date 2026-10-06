@@ -7,4 +7,7 @@
     <event name="adminhtml_sales_order_create_process_data_before">
         <observer name="save_venipak_pickup_point" instance="Mijora\Venipak\Model\Observer\SaveVenipakPickupPointToNewOrderObserver" />
     </event>
+    <event name="sales_order_save_after">
+        <observer name="venipak_auto_register_shipment" instance="Mijora\Venipak\Model\Observer\AutoRegisterShipmentObserver" />
+    </event>
 </config>
