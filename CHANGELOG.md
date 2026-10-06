@@ -1,6 +1,15 @@
-# Unreleased
+# 1.1.0 - 2026-10-06
 - Fixed to display shipping methods based on the "Ship to Specific Countries" parameter
 - Added a log entry to determine the reason when a method is not displayed on the Checkout page
+- Added "Auto-register shipment on status" parameter to the module settings
+- Added automatic Venipak shipment registration when the order status is changed to the status selected in the module settings (not applied to newly created orders)
+- Fixed order page error in admin when pickup points could not be retrieved from Venipak API
+- Added selected pickup point to the order shipping description, so it is shown in emails, invoices and admin
+- Added Venipak tracking numbers with links to the tracking page in order, invoice and credit memo emails
+- Shipment tracking link in the shipment email now leads directly to the Venipak tracking page
+- Shipment email is now sent to the customer after the Venipak shipment is registered (if shipment emails are enabled in Magento)
+- Fixed creating a single Magento shipment with tracking numbers of all packages
+- Changed default API TEST URL to http://gouat.venipak.lt/
 
 # 1.0.21 - 2026-03-24
 - Fixed trailing comma in Block\Adminhtml\Order\Grid class

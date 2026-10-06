@@ -16,16 +16,19 @@ use Magento\Sales\Api\OrderRepositoryInterface;
 class UpdateTerminal extends \Magento\Framework\App\Action\Action {
 
     protected $orderRepository;
+    protected $shippingDescription;
      
     public function __construct(
         Context $context, 
         Filter $filter, 
         CollectionFactory $collectionFactory, 
         OrderManagementInterface $orderManagement, 
-        OrderRepositoryInterface $orderRepository
+        OrderRepositoryInterface $orderRepository,
+        \Mijora\Venipak\Model\ShippingDescription $shippingDescription
     )
     {
       $this->orderRepository = $orderRepository;
+      $this->shippingDescription = $shippingDescription;
       parent::__construct($context);
     }
     
@@ -43,7 +46,9 @@ class UpdateTerminal extends \Magento\Framework\App\Action\Action {
         }
         $data->pickupPoint = $terminal;
         $shippingAddress->setVenipakData(json_encode($data));
+        $this->shippingDescription->updatePickupPoint($order);
         $shippingAddress->save();
+        $this->orderRepository->save($order);
         
         $text = __('Parcel terminal updated');
         $this->messageManager->addSuccess($text);
