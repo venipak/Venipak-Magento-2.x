@@ -26,3 +26,4 @@ Pickup point,Paštomatas/atsiėmimo punktas
 "Venipak shipment for order #%1 registered automatically","Užsakymo #%1 Venipak siunta užregistruota automatiškai"
 "Failed to automatically register Venipak shipment for order #%1: %2","Nepavyko automatiškai užregistruoti užsakymo #%1 Venipak siuntos: %2"
 "Failed to automatically register Venipak shipment: %1","Nepavyko automatiškai užregistruoti Venipak siuntos: %1"
+"Venipak tracking number","Venipak siuntos numeris"

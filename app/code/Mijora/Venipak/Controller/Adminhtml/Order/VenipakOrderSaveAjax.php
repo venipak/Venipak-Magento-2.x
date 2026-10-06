@@ -9,6 +9,7 @@ class VenipakOrderSaveAjax extends \Magento\Backend\App\Action {
     protected $orderFactory;
     protected $coreRegistry;
     protected $json;
+    protected $shippingDescription;
 
     public function __construct(
             \Magento\Backend\App\Action\Context $context,
@@ -16,7 +17,8 @@ class VenipakOrderSaveAjax extends \Magento\Backend\App\Action {
             \Mijora\Venipak\Model\OrderFactory $venipakOrderFactory,
             \Magento\Sales\Model\OrderFactory $orderFactory,
             \Magento\Framework\Registry $coreRegistry,
-            \Magento\Framework\Controller\Result\JsonFactory $json
+            \Magento\Framework\Controller\Result\JsonFactory $json,
+            \Mijora\Venipak\Model\ShippingDescription $shippingDescription
     ) {
         parent::__construct($context);
         $this->resultPageFactory = $resultPageFactory;
@@ -24,6 +26,7 @@ class VenipakOrderSaveAjax extends \Magento\Backend\App\Action {
         $this->orderFactory = $orderFactory;
         $this->coreRegistry = $coreRegistry;
         $this->json = $json;
+        $this->shippingDescription = $shippingDescription;
     }
 
     public function execute() {
@@ -80,7 +83,9 @@ class VenipakOrderSaveAjax extends \Magento\Backend\App\Action {
         }
         $data->pickupPoint = $formData['pickup_point'];
         $shippingAddress->setVenipakData(json_encode($data));
+        $this->shippingDescription->updatePickupPoint($order);
         $shippingAddress->save();
+        $order->save();
         
         $model->addData($modelData);
         

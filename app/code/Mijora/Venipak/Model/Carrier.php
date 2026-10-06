@@ -32,6 +32,11 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
     const CODE = 'venipak';
 
     /**
+     * Venipak shipment tracking page URL, tracking number is appended to the end
+     */
+    const TRACKING_URL = 'https://venipak.com/tracking/track/';
+
+    /**
      * Code of the carrier
      *
      * @var string
@@ -96,6 +101,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
     protected $trackFactory;
     protected $api;
     protected $productFactory;
+    protected $shipmentSender;
     private $venipakTracking = null;
     private $venipakLabel = null;
 
@@ -152,6 +158,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
             \Magento\Sales\Api\Data\ShipmentTrackInterfaceFactory $trackInterfaceFactory,
             \Mijora\Venipak\Model\Helper\MjvpApi $api,
             \Magento\Catalog\Model\ProductFactory $productFactory,
+            \Magento\Sales\Model\Order\Email\Sender\ShipmentSender $shipmentSender,
             array $data = []
     ) {
         $this->_checkoutSession = $checkoutSession;
@@ -170,6 +177,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
 
 
         $this->productFactory = $productFactory;
+        $this->shipmentSender = $shipmentSender;
         parent::__construct(
                 $scopeConfig,
                 $rateErrorFactory,
@@ -529,7 +537,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
     public function getTrackingInfo($trackingNumber) {
         $tracking = $this->_trackStatusFactory->create();
 
-        $url = 'https://venipak.com/tracking/track/' . $trackingNumber;
+        $url = self::TRACKING_URL . $trackingNumber;
 
         $tracking->setData([
             'carrier' => $this->_code,
@@ -817,7 +825,11 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
     }
 
     private function setOrderShipment($order, $labels) {
-        foreach ($labels as $label) {
+        if (empty($labels) || !$order->canShip()) {
+            return;
+        }
+
+        try {
             $shipment = $this->convertOrder->toShipment($order);
 
             foreach ($order->getAllItems() AS $orderItem) {
@@ -833,28 +845,34 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
             $shipment->register();
             $shipment->getOrder()->setIsInProcess(true);
 
-            try {
-                $shipment->save();
-                $shipment->getOrder()->save();
+            $shipment->save();
+            $shipment->getOrder()->save();
+            // one shipment with tracking number of every package
+            foreach ($labels as $label) {
                 $track = $this->trackFactory->create()->setNumber(
                                 $label
                         )->setCarrierCode(
-                                $order->getData('shipping_method')
+                                self::CODE
                         )->setTitle(
                         'Venipak'
                 );
-                $pdf = $this->printLabels([$label]);
-                if ($pdf) {
-                    $shipment->setShippingLabel($pdf);
-                }
                 $shipment->addTrack($track);
-                $shipment->save();
-            } catch (\Exception $e) {
-                /*
-                  throw new \Magento\Framework\Exception\LocalizedException(
-                  __($e->getMessage())
-                  ); */
             }
+            $pdf = $this->printLabels($labels);
+            if ($pdf) {
+                $shipment->setShippingLabel($pdf);
+            }
+            $shipment->save();
+        } catch (\Exception $e) {
+            $this->_logger->error('Venipak: failed to create shipment for order #' . $order->getIncrementId() . '. ' . $e->getMessage());
+            return;
+        }
+
+        try {
+            // sent only if shipment emails are enabled in Magento settings
+            $this->shipmentSender->send($shipment);
+        } catch (\Exception $e) {
+            $this->_logger->error('Venipak: failed to send shipment email for order #' . $order->getIncrementId() . '. ' . $e->getMessage());
         }
     }
 
