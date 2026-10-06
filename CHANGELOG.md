@@ -3,6 +3,7 @@
 - Added a log entry to determine the reason when a method is not displayed on the Checkout page
 - Added "Auto-register shipment on status" parameter to the module settings
 - Added automatic Venipak shipment registration when the order status is changed to the status selected in the module settings (not applied to newly created orders)
+- Fixed order page error in admin when pickup points could not be retrieved from Venipak API
 
 # 1.0.21 - 2026-03-24
 - Fixed trailing comma in Block\Adminhtml\Order\Grid class

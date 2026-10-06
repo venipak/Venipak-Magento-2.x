@@ -905,7 +905,12 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
         if ($var->getId() && is_array(json_decode($var->getPlainValue()))){
             return json_decode($var->getPlainValue());
         }
-        return $this->api->getTerminals($country);
+        $terminals = $this->api->getTerminals($country);
+        if (!is_array($terminals)) {
+            $this->_logger->error('Venipak: failed to get pickup points for country "' . $country . '". Response: ' . (is_string($terminals) ? $terminals : json_encode($terminals)));
+            return [];
+        }
+        return $terminals;
     }
 
     public function isXMLContentValid($xmlContent, $version = '1.0', $encoding = 'utf-8') {
