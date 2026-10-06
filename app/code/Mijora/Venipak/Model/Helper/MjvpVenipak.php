@@ -5,7 +5,7 @@ namespace Mijora\Venipak\Model\Helper;
 class MjvpVenipak
 {
     private $_liveCurlUrl = 'https://go.venipak.lt/';
-    private $_testCurlUrl = 'https://venipak.uat.megodata.com/'; //DEMO
+    private $_testCurlUrl = 'http://gouat.venipak.lt/'; //DEMO
     private $_curlUrl;
     private $_test = false;
     private $_moduleVersion = "0.0.0";

@@ -13,11 +13,21 @@ class SaveVenipakPickupPointToOrderObserver implements ObserverInterface
     protected $_objectManager;
 
     /**
-     * @param \Magento\Framework\ObjectManagerInterface $objectmanager
+     * @var \Mijora\Venipak\Model\ShippingDescription
      */
-    public function __construct(\Magento\Framework\ObjectManagerInterface $objectmanager)
+    protected $shippingDescription;
+
+    /**
+     * @param \Magento\Framework\ObjectManagerInterface $objectmanager
+     * @param \Mijora\Venipak\Model\ShippingDescription $shippingDescription
+     */
+    public function __construct(
+        \Magento\Framework\ObjectManagerInterface $objectmanager,
+        \Mijora\Venipak\Model\ShippingDescription $shippingDescription
+    )
     {
         $this->_objectManager = $objectmanager;
+        $this->shippingDescription = $shippingDescription;
     }
 
     public function execute(EventObserver $observer)
@@ -30,6 +40,7 @@ class SaveVenipakPickupPointToOrderObserver implements ObserverInterface
         $quote_address = $quote->getShippingAddress();
         $order_address = $order->getShippingAddress();
         $order_address->setVenipakData( $quote_address->getVenipakData());
+        $this->shippingDescription->updatePickupPoint($order);
         return $this;
     }
 

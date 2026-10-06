@@ -17,7 +17,7 @@ class VenipakShipping extends \Magento\Backend\Block\Template implements \Magent
      * @var \Magento\Framework\Registry
      */
     protected $coreRegistry = null;
-    protected $orderFactory;
+    protected $orderInitializer;
     protected $warehouseFactory;
     protected $api;
     protected $carrier;
@@ -32,14 +32,14 @@ class VenipakShipping extends \Magento\Backend\Block\Template implements \Magent
     public function __construct(
             \Magento\Backend\Block\Template\Context $context,
             \Magento\Framework\Registry $registry,
-            \Mijora\Venipak\Model\OrderFactory $orderFactory,
+            \Mijora\Venipak\Model\OrderInitializer $orderInitializer,
             \Mijora\Venipak\Model\WarehouseFactory $warehouseFactory,
             \Magento\Framework\UrlInterface $urlBuilder,
             \Mijora\Venipak\Model\Carrier $carrier,
             array $data = []
     ) {
         $this->coreRegistry = $registry;
-        $this->orderFactory = $orderFactory;
+        $this->orderInitializer = $orderInitializer;
         $this->warehouseFactory = $warehouseFactory;
         $this->urlBuilder = $urlBuilder;
         $this->carrier = $carrier;
@@ -53,9 +53,7 @@ class VenipakShipping extends \Magento\Backend\Block\Template implements \Magent
     }
     
     public function getDefaultWarehouse() {
-        $warehouse = $this->warehouseFactory->create();
-        $warehouse->load(1, 'default');
-        return $warehouse;
+        return $this->orderInitializer->getDefaultWarehouse();
     }
 
     public function getTerminals() {
@@ -81,39 +79,7 @@ class VenipakShipping extends \Magento\Backend\Block\Template implements \Magent
     }
 
     public function getVenipakOrder() {
-        $order = $this->getOrder();
-        $model = $this->orderFactory->create();
-        $model->load($order->getId(), 'order_id');
-        if (!$model->getId()){
-            $model = $this->createVenipakOrder($model, $order);
-        }
-        return $model;
-    }
-    
-    private function createVenipakOrder($model, $order){
-        $model->setOrderId($order->getId());
-        $shippingAddress = $order->getShippingAddress();
-        $data =  @json_decode($shippingAddress->getVenipakData());
-        if (is_object($data)){
-            $model->setDoorCode($data->doorCode ?? null);
-            $model->setWarehouseNumber($data->warehouseNumber ?? null);
-            $model->setCabinetNumber($data->cabinetNumber ?? null);
-            $model->setDeliveryTime($data->deliveryTime ?? null);
-            $model->setCallBeforeDelivery($data->callBeforeDelivery ?? null);
-        }
-        $payment_method = $order->getPayment()->getMethodInstance()->getCode();
-        if (stripos('cashondelivery', $payment_method) !== false || stripos('venipak_cod', $payment_method) !== false) {
-            $model->setIsCod(1);
-            $model->setCodAmount(round($order->getGrandTotal(), 2));
-        }
-        $default_warehouse = $this->getDefaultWarehouse();
-        if ($default_warehouse){
-            $model->setWarehouseId($default_warehouse->getWarehouseId());
-        }
-        $model->setNumberOfPackages(1);
-        $model->setWeight($order->getWeight());
-        $model->save();
-        return $model;
+        return $this->orderInitializer->getVenipakOrder($this->getOrder());
     }
     
     public function getLabels($model){

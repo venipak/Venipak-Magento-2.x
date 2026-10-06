@@ -32,13 +32,18 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
     const CODE = 'venipak';
 
     /**
+     * Venipak shipment tracking page URL, tracking number is appended to the end
+     */
+    const TRACKING_URL = 'https://venipak.com/tracking/track/';
+
+    /**
      * Code of the carrier
      *
      * @var string
      */
     protected $_code = self::CODE;
 
-    protected $_moduleVersion = '1.0.21';
+    protected $_moduleVersion = '1.1.0';
 
     /**
      * Rate request data
@@ -96,6 +101,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
     protected $trackFactory;
     protected $api;
     protected $productFactory;
+    protected $shipmentSender;
     private $venipakTracking = null;
     private $venipakLabel = null;
 
@@ -152,6 +158,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
             \Magento\Sales\Api\Data\ShipmentTrackInterfaceFactory $trackInterfaceFactory,
             \Mijora\Venipak\Model\Helper\MjvpApi $api,
             \Magento\Catalog\Model\ProductFactory $productFactory,
+            \Magento\Sales\Model\Order\Email\Sender\ShipmentSender $shipmentSender,
             array $data = []
     ) {
         $this->_checkoutSession = $checkoutSession;
@@ -170,6 +177,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
 
 
         $this->productFactory = $productFactory;
+        $this->shipmentSender = $shipmentSender;
         parent::__construct(
                 $scopeConfig,
                 $rateErrorFactory,
@@ -324,7 +332,16 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
             $country_id = $request->getDestCountryId();
         }
         if (!isset($allowed_countries[$country_id])) {
+            $this->_logger->debug('Venipak collectRates: blocked, country not allowed - ' . $country_id);
             return false;
+        }
+
+        if ($this->getConfigData('sallowspecific') == 1) {
+            $specificCountries = explode(',', (string) $this->getConfigData('specificcountry'));
+            if (!in_array($country_id, $specificCountries)) {
+                $this->_logger->debug('Venipak collectRates: blocked, country not in Specific Countries list - ' . $country_id);
+                return false;
+            }
         }
 
         if ($isPriceByCountry) {
@@ -357,6 +374,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
                 $description = $product->getDescription();
                 if (stripos($description, $keyword) !== false) {
                     //found keyword, no shipping possible
+                    $this->_logger->debug('Venipak collectRates: blocked, ignore_keyword matched product #' . $product_id);
                     return false;
                 }
             }
@@ -377,6 +395,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
             $freeFrom = false;
             if ($allowedMethod == "COURIER") {
                 if (! empty($maxWeightCourier) && $weight > $maxWeightCourier) {
+                    $this->_logger->debug('Venipak collectRates: COURIER skipped, weight ' . $weight . ' > max ' . $maxWeightCourier);
                     continue;
                 }
                 $amount = $courier_price;
@@ -384,6 +403,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
             }
             if ($allowedMethod == "PICKUP_POINT") {
                 if (! empty($maxWeightPickup) && $weight > $maxWeightPickup) {
+                    $this->_logger->debug('Venipak collectRates: PICKUP_POINT skipped, weight ' . $weight . ' > max ' . $maxWeightPickup);
                     continue;
                 }
                 $amount = $pickup_point_price;
@@ -517,7 +537,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
     public function getTrackingInfo($trackingNumber) {
         $tracking = $this->_trackStatusFactory->create();
 
-        $url = 'https://venipak.com/tracking/track/' . $trackingNumber;
+        $url = self::TRACKING_URL . $trackingNumber;
 
         $tracking->setData([
             'carrier' => $this->_code,
@@ -805,7 +825,11 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
     }
 
     private function setOrderShipment($order, $labels) {
-        foreach ($labels as $label) {
+        if (empty($labels) || !$order->canShip()) {
+            return;
+        }
+
+        try {
             $shipment = $this->convertOrder->toShipment($order);
 
             foreach ($order->getAllItems() AS $orderItem) {
@@ -821,28 +845,34 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
             $shipment->register();
             $shipment->getOrder()->setIsInProcess(true);
 
-            try {
-                $shipment->save();
-                $shipment->getOrder()->save();
+            $shipment->save();
+            $shipment->getOrder()->save();
+            // one shipment with tracking number of every package
+            foreach ($labels as $label) {
                 $track = $this->trackFactory->create()->setNumber(
                                 $label
                         )->setCarrierCode(
-                                $order->getData('shipping_method')
+                                self::CODE
                         )->setTitle(
                         'Venipak'
                 );
-                $pdf = $this->printLabels([$label]);
-                if ($pdf) {
-                    $shipment->setShippingLabel($pdf);
-                }
                 $shipment->addTrack($track);
-                $shipment->save();
-            } catch (\Exception $e) {
-                /*
-                  throw new \Magento\Framework\Exception\LocalizedException(
-                  __($e->getMessage())
-                  ); */
             }
+            $pdf = $this->printLabels($labels);
+            if ($pdf) {
+                $shipment->setShippingLabel($pdf);
+            }
+            $shipment->save();
+        } catch (\Exception $e) {
+            $this->_logger->error('Venipak: failed to create shipment for order #' . $order->getIncrementId() . '. ' . $e->getMessage());
+            return;
+        }
+
+        try {
+            // sent only if shipment emails are enabled in Magento settings
+            $this->shipmentSender->send($shipment);
+        } catch (\Exception $e) {
+            $this->_logger->error('Venipak: failed to send shipment email for order #' . $order->getIncrementId() . '. ' . $e->getMessage());
         }
     }
 
@@ -893,7 +923,12 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
         if ($var->getId() && is_array(json_decode($var->getPlainValue()))){
             return json_decode($var->getPlainValue());
         }
-        return $this->api->getTerminals($country);
+        $terminals = $this->api->getTerminals($country);
+        if (!is_array($terminals)) {
+            $this->_logger->error('Venipak: failed to get pickup points for country "' . $country . '". Response: ' . (is_string($terminals) ? $terminals : json_encode($terminals)));
+            return [];
+        }
+        return $terminals;
     }
 
     public function isXMLContentValid($xmlContent, $version = '1.0', $encoding = 'utf-8') {

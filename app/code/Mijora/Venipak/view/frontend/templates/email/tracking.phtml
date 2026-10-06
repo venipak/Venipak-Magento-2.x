@@ -1,0 +1,23 @@
+<?php
+/**
+ * Venipak tracking numbers in order, invoice and credit memo emails
+ *
+ * @var \Magento\Framework\View\Element\Template $block
+ * @var \Magento\Framework\Escaper $escaper
+ */
+$trackingNumbers = $block->getTrackingNumbers();
+?>
+<?php if (!empty($trackingNumbers)): ?>
+<table class="venipak-tracking" style="width: 100%; margin-top: 15px;">
+    <tr>
+        <td>
+            <strong><?= $block->escapeHtml(__('Venipak tracking number')) ?>:</strong>
+            <?php $links = []; ?>
+            <?php foreach ($trackingNumbers as $number): ?>
+                <?php $links[] = '<a href="' . $block->escapeUrl(\Mijora\Venipak\Model\Carrier::TRACKING_URL . rawurlencode($number)) . '" target="_blank">' . $block->escapeHtml($number) . '</a>'; ?>
+            <?php endforeach; ?>
+            <?= implode(', ', $links) ?>
+        </td>
+    </tr>
+</table>
+<?php endif; ?>

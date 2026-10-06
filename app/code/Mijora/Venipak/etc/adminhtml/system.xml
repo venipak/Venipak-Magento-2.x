@@ -94,7 +94,12 @@
                     <label>Label size</label>
                     <source_model>Mijora\Venipak\Model\Source\LabelSize</source_model>
                 </field>
-                
+                <field id="auto_register_status" translate="label comment" type="select" sortOrder="135" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Auto-register shipment on status</label>
+                    <source_model>Mijora\Venipak\Model\Source\OrderStatus</source_model>
+                    <comment>Automatically register a shipment when the order status is changed to the selected status.</comment>
+                </field>
+
                 <field id="max_package_weight_c" translate="label" type="text" sortOrder="140" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
                     <label>Courier maximum package weight</label>
                     <validate>validate-number validate-zero-or-greater</validate>

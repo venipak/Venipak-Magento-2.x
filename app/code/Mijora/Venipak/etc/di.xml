@@ -11,6 +11,23 @@
     <type name="Magento\Quote\Model\Quote\Address">
         <plugin name="venipak-pickup-point" type="Mijora\Venipak\Model\Quote\AddressPlugin" sortOrder="1" disabled="false"/>
     </type>
+    <type name="Magento\Sales\Block\DataProviders\Email\Shipment\TrackingUrl">
+        <plugin name="venipak_email_tracking_url" type="Mijora\Venipak\Plugin\Email\TrackingUrlPlugin" />
+    </type>
+    <type name="Magento\Sales\Block\Order\Email\Items">
+        <plugin name="venipak_email_tracking_numbers" type="Mijora\Venipak\Plugin\Email\ItemsTrackingPlugin" />
+    </type>
+    <type name="Magento\Sales\Block\Order\Email\Invoice\Items">
+        <plugin name="venipak_email_tracking_numbers" type="Mijora\Venipak\Plugin\Email\ItemsTrackingPlugin" />
+    </type>
+    <type name="Magento\Sales\Block\Order\Email\Creditmemo\Items">
+        <plugin name="venipak_email_tracking_numbers" type="Mijora\Venipak\Plugin\Email\ItemsTrackingPlugin" />
+    </type>
+    <type name="Mijora\Venipak\Model\Observer\AutoRegisterShipmentObserver">
+        <arguments>
+            <argument name="carrier" xsi:type="object">Mijora\Venipak\Model\Carrier\Proxy</argument>
+        </arguments>
+    </type>
     <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
         <arguments>
             <argument name="collections" xsi:type="array">

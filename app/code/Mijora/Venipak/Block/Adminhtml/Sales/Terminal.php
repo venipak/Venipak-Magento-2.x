@@ -32,8 +32,6 @@ class Terminal extends \Magento\Backend\Block\Template {
         $this->coreRegistry = $registry;
         $this->carrier = $carrier;
         parent::__construct($context, $data);
-        
-        $this->pickupPoints = $this->carrier->getTerminals('');
     }
     
     public function getTerminalName(){
@@ -75,8 +73,9 @@ class Terminal extends \Magento\Backend\Block\Template {
     public function getTerminal($order)
     {
         $terminal_id = $this->getTerminalId($order);
-        if (is_array($this->pickupPoints)){
-            foreach ($this->pickupPoints as $pickup){
+        $pickupPoints = $this->getTerminals();
+        if (is_array($pickupPoints)){
+            foreach ($pickupPoints as $pickup){
                 if ($pickup->id == $terminal_id){
                     return $pickup;
                 }
@@ -87,6 +86,11 @@ class Terminal extends \Magento\Backend\Block\Template {
    
     public function getTerminals()
     {
+        if ($this->pickupPoints === null) {
+            $shippingAddress = $this->getOrder()->getShippingAddress();
+            $country = $shippingAddress ? $shippingAddress->getCountryId() : '';
+            $this->pickupPoints = $this->carrier->getTerminals($country);
+        }
         return $this->pickupPoints;
     }
     
