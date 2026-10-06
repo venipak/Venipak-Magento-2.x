@@ -20,3 +20,6 @@ Warehouse number (optional):,Sandėlio numeris (neprivaloma):
 Call before delivery,Paskambinti prieš pristatant
 Courier,Kurjeris
 Pickup point,Paštomatas/atsiėmimo punktas
+"Auto-register shipment on status","Automatiškai registruoti siuntą esant būsenai"
+"Automatically register a shipment when the order status is changed to the selected status.","Automatiškai registruoti siuntą, kai užsakymo būsena pakeičiama į pasirinktą."
+"-- Disabled --","-- Išjungta --"
