@@ -9,6 +9,7 @@
 - Shipment tracking link in the shipment email now leads directly to the Venipak tracking page
 - Shipment email is now sent to the customer after the Venipak shipment is registered (if shipment emails are enabled in Magento)
 - Fixed creating a single Magento shipment with tracking numbers of all packages
+- Changed default API TEST URL to http://gouat.venipak.lt/
 
 # 1.0.21 - 2026-03-24
 - Fixed trailing comma in Block\Adminhtml\Order\Grid class
